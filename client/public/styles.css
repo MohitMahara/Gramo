@@ -1,0 +1,597 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500&family=Gruppo&family=Montserrat:wght@400;500;700&family=Piazzolla:wght@200;400;900&family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;700&family=Roboto:wght@400;500&family=Updock&family=Ysabeau+SC:wght@400;500&display=swap');
+
+*{
+    padding: 0px;
+    margin: 0px;
+    box-sizing: border-box;
+}
+
+
+/* Home page  */
+
+/* Left Sidebar */
+
+.navbar-brand{
+    gap: 10px;
+}
+
+.navbar-brand h3{
+    font-family: "Dancing Script", serif;
+    color: rgb(14, 14, 87);
+    font-weight: 600;
+    font-size: 30px;
+}
+
+.navbar-brand img{
+    width: 40px;
+    border-radius: 8px;
+}
+
+.nav-link:hover{
+    color: rgb(16, 16, 122);
+
+}
+
+.searchBox{
+    border-radius: 25px;
+    background-color: white;
+    justify-content: center;
+    align-items: center;
+    border: .5px solid rgb(206, 204, 204);
+}
+
+.searchBox .search{
+    border: none;
+}
+
+.searchBox .search:focus{
+    box-shadow: none;
+}
+
+.searchBox .icon{
+    font-size: 25px;
+}
+
+.leftContainer{
+    min-width: 18vw;
+    background-color: #f8f9fa;
+    padding-top: 30px;
+    padding-left: 20px;
+    border-right: .5px solid rgb(155, 154, 154);
+
+}
+
+.featuresContainer{
+    height: 70%;
+    margin-top: 40px;
+}
+
+
+.featuresContainer ul{
+    height: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-inline-start: 0;
+}
+
+.nav-item{
+    list-style-type : none;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.nav-link{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    font-size: 16px;
+    align-items: center;
+    text-align: center;
+}
+
+.nav-link .nav-icon{
+    width: 25px;
+    height: 25px;
+}
+
+
+.nav-icon path {
+    stroke: black;     
+    stroke-width: .5;      
+  }
+
+
+
+/* Right sidebar */
+
+.rightContainer{
+    min-width: 30vw;
+    background-color: #f8f9fa;
+    padding: 30px 10px 10px 60px;
+}
+
+.profileIcon{
+    width: 50px;
+    border-radius: 25px;
+}
+
+.rightContainer .userProfile .username{
+  font-family: 'Poppins',system-ui;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.rightContainer .userProfile .name{
+  font-family: 'Poppins',system-ui;
+  font-weight: 500;
+  color: grey;
+  font-size: 12px;
+}
+
+.follow-btn{
+    color: blue;
+    margin-left: 5px;
+    text-decoration: none;
+    margin-left: auto;
+    margin-right: 10px;
+}
+
+.userProfile p{
+    margin-bottom: 0;
+}
+
+.userProfile div{
+    align-items: center;
+    gap: 5px;
+}
+
+.userProfile{
+    align-items: center;
+}
+
+
+/* Middle Section */
+
+
+.homeContainer{
+    width: 100%;
+    max-height: 95vh;
+    padding-top: 30px;
+}
+
+
+.homeContainer {
+    overflow: auto;
+    scrollbar-width: none; /* Firefox */
+  }
+  
+.homeContainer::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+  
+
+
+/* Stories section */
+
+.story-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.story-container {
+    display: flex;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+.story {
+    background-color: rgb(201, 53, 151);
+    background: linear-gradient(to right, rgb(236, 31, 31), rgb(105, 16, 90));
+    background: linear-gradient(to right, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    background: linear-gradient(to right, #ff9966, #ff5e62);
+    background: linear-gradient(to right, #00f260, #0575e6);
+    background: linear-gradient(to right, #fcb045, #fd1d1d, #833ab4);
+    padding: 3px;
+    border-radius: 30px;
+}
+
+.story-viewed{
+    background: linear-gradient(to right, #d6a4a4, #c5b2b2, #b3abab, #9f9b9b, #8c8080);
+    padding: 3px;
+    border-radius: 30px;
+}
+
+
+/* Style for scroll buttons */
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    padding: 2px;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.left-btn {
+    left: 0;
+}
+
+.right-btn {
+    right: 0;
+}
+
+
+/* Post Section */
+
+.postContainer{
+    width: 100%;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    /* background-color: #dddada; */
+}
+
+.postContainer .posts{
+    width: 70%;
+    min-height: 80vh;
+    padding: 10px;
+}
+
+.posts .userProfile .profileIcon{
+  width: 40px;
+  border-radius: 20px;
+}
+
+.posts .userProfile .profile-name{
+  margin-left: 5px;
+  font-weight: 600;
+}
+
+.posts .userProfile sup{
+   font-size: 18px;
+   font-weight: bold;
+}
+
+.posts .userProfile .post-date{
+    margin-left: 5px;
+  }
+
+
+.card-body .post-info{
+    width: 100%;
+    padding-top: 10px;
+}
+
+.post-info .post-activity{
+    display: flex;
+    gap: 10px;
+    padding: 5px;
+}
+
+.post-activity .postIcon{
+    font-size: 25px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.likeIcon path {
+    stroke: black;     
+    stroke-width: .5;      
+  }
+
+.shareIcon path {
+    stroke: black;    
+    stroke-width: .5;    
+}  
+
+.saveIcon path {
+    stroke: black;    
+    stroke-width: .5;    
+}  
+
+.post-text{
+    padding: 5px;
+}
+
+.post-text p {
+    margin-bottom: 2px;
+}
+
+.post-text .likes{
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.post-text .caption{
+    font-family: 'Poppins';
+    font-size: 14px;
+}
+
+
+/* comment section */
+
+.comment-section{
+    padding-left: 15px;
+}
+
+.all-comments{
+    font-family: 'Poppins';
+    text-decoration: none;
+    font-size: 14px;
+    color: grey;
+}
+
+.cmtcollapsebtn{
+    width: 24px;
+    height: 24px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.comments{
+    max-height: 200px;
+    overflow: auto;
+    scrollbar-width: none; /* Firefox */
+}
+
+.comments::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+
+.user-comment{
+    width: 100%;
+    height: auto;
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.user-comment .userProfile{
+    display: flex;
+    align-items:start;
+  }
+
+.user-comment .userProfile .profileIcon{
+  width: 30px;
+  border-radius: 15px;
+}
+
+.user-comment .comment-text{
+    height: 100%;
+}
+
+.user-comment .comment-text p{
+    margin-bottom: 0;
+    font-family: 'Poppins',system-ui;
+    font-size: 13px;
+}
+
+.user-comment .comment-text .user{
+    font-weight: bold;
+}
+
+
+.addComment{
+    margin-top: 10px;
+    display: flex;
+    gap: 5px;
+    width: 100%;
+}
+
+.addComment p{
+    margin-bottom: 0;
+    color: rgb(99, 99, 247);
+    font-weight: bold;
+}
+
+.addComment input[type = "text"]{
+    width: 90%;
+    font-family: 'Poppins';
+    font-size: 14px;
+    color: black;
+    outline: none;
+    border: none;
+    padding: 5px;
+    border-radius: 3px;
+    background-color: rgb(235, 232, 232);
+}
+
+
+
+/* Login Form */
+
+.login-container{
+   height: 95vh;
+   width: 100%;
+}
+
+.login-container .navbar-brand {
+    padding-left: 20px;
+    padding-top: 10px;
+}
+
+.login-container .navbar-brand h3 {
+    font-size: 40px;
+}
+
+.formContainer{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 20px;
+}
+
+.formContainer .login-header{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.formContainer .login-header h1{
+   font-family: 'Poppins', system-ui;
+   font-size: 60px;
+}
+
+
+
+.loginForm{
+    width: 60%;
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    background-color: rgb(192, 214, 233);
+    padding: 20px;
+    gap: 20px;
+    align-items: center;
+}
+
+.loginForm div{
+ width: 60%;
+}
+
+.loginForm div input{
+    width: 100%;
+}
+
+.loginForm div input{
+    border: none;
+    background-color: rgb(235, 232, 232);
+    padding: 10px;
+    border-radius: 12px;
+}
+
+
+.loginForm .submitbtn{
+    background-color: rgb(3, 3, 59);
+    color: white;
+    width : 100%;
+}
+
+.loginForm .googlebtn{
+    background-color: rgb(236, 233, 233);
+    border: 1.5px solid grey;
+    color: black;
+    width : 100%;
+}
+
+.loginForm .signUpCheck{
+    text-align: center;
+}
+
+.loginForm .signUpCheck {
+    text-align: center;
+}
+
+.loginForm .signUpCheck .link{
+   text-decoration: none;
+   font-weight: bold;
+}
+
+
+
+/* profile page */
+
+.profilePageContainer{
+    min-width: 82vw;
+    min-height: 95vh;
+    font-weight: 500;
+    display: flex;
+    justify-content: center;
+}
+
+.profilePageContainer .profile-card{
+    min-width: 60vw;
+    padding: 20px;
+    padding-top: 40px;
+}
+
+.profilePageContainer .infoContainer{
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.profilePageContainer .infoContainer .profileIcon{
+    width: 100px;
+    height: 100px;
+    border-radius: 50px;
+}
+
+.profilePageContainer .infoContainer .user-info {
+    width: 80%;
+}
+
+.profilePageContainer .infoContainer .user-info div{
+  width: 100%;
+  gap: 20px;
+}
+
+.profilePageContainer .infoContainer .user-info .editIcon{
+  font-weight: 600;
+  background-color: lightblue;
+
+}
+
+.profilePageContainer .username{
+    font-weight: 600;
+    font-size: 18px;
+}
+
+
+/* update profile */
+
+.updateProfile{
+    height: 60vh;
+}
+
+
+.updateProfile .loginForm{
+    width: 100%;
+    height: 100%;
+}
+
+.updateProfile .loginForm div{
+    width: 100%;
+}
+
+
+
+
+
+
+/* footer */
+
+.footer-container{
+    background-color: black;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+
+.footer{
+    background-color: #f8f9fa;
+    
+}
+
+.footer-div{
+  justify-content: space-between;
+  align-items: center;
+
+}
+
+
