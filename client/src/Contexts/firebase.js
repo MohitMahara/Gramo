@@ -1,13 +1,13 @@
 import { initializeApp } from "firebase/app";
 import { useState, createContext, useContext, useEffect } from "react";
 import axios from "axios";
-import { GoogleAuthProvider } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 const provider = new GoogleAuthProvider();
 
 // Firebase Initialization
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCY9RHLCoIMLshXmvsbs4QkNYG08zlhCTM",
+  apiKey: `${process.env.REACT_APP_FIREBASE_API}`,
   authDomain: "gramo-2a37a.firebaseapp.com",
   projectId: "gramo-2a37a",
   storageBucket: "gramo-2a37a.appspot.com",
@@ -25,10 +25,22 @@ export const FirebaseContext = createContext();
 
 export const FirebaseProvider = ({ children }) => {
 
+  const auth = getAuth();
+
   const [userInfo, setUserInfo] = useState({
     user: null,
     token: null,
   });
+
+
+  const signInGoogle = async() =>{
+    try {
+      return await signInWithPopup(auth, provider)
+      
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   // Default header for all requests made via axios.
 
@@ -51,9 +63,8 @@ export const FirebaseProvider = ({ children }) => {
 
 
 
-
   return (
-    <FirebaseContext.Provider value={{ userInfo, setUserInfo}}>
+    <FirebaseContext.Provider value={{ userInfo, setUserInfo, signInGoogle}}>
       {children}
     </FirebaseContext.Provider>
   );

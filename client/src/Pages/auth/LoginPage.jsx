@@ -9,11 +9,11 @@ import { toast} from "react-toastify";
 import AuthHeader from "./authHeader";
 
 const LoginPage = () => {
-  const { userInfo, setUserInfo} = UseFirebase();
+  const { userInfo, setUserInfo, signInGoogle} = UseFirebase();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -48,51 +48,52 @@ const LoginPage = () => {
     return `${Name}_${uniqueId}`;
   }
 
-  // const loginwithGoogle = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     const snapshot = await signInGoogle();
-  //     const name = snapshot?.user.displayName;
-  //     const uid = snapshot?.user.uid;
-  //     const email = snapshot?.user.email;
-  //     const idtoken = snapshot?._tokenResponse.idToken;
-  //     const username = generateUsername(name);
 
-  //     const res = await axios.post(
-  //       `${process.env.REACT_APP_API}/api/auth/register`,
-  //       {
-  //         name,
-  //         email,
-  //         username,
-  //         uid,
-  //       }
-  //     );
+  const loginwithGoogle = async (e) => {
+    e.preventDefault();
+    try {
+      const snapshot = await signInGoogle();
+      const name = snapshot?.user.displayName;
+      const uid = snapshot?.user.uid;
+      const email = snapshot?.user.email;
+      const idtoken = snapshot?._tokenResponse.idToken;
+      const username = generateUsername(name);
 
-  //     let data;
-  //     const getUser = await axios.get(
-  //       `${process.env.REACT_APP_API}/api/auth/get-user/${uid}`
-  //     );
+      const res = await axios.post(
+        `${process.env.REACT_APP_API}/api/auth/register`,
+        {
+          name,
+          email,
+          username,
+          uid,
+        }
+      );
 
-  //     if (getUser.data.success) {
-  //       data = {
-  //         user: getUser.data.user,
-  //         token: idtoken,
-  //       };
+      let data;
+      const getUser = await axios.get(
+        `${process.env.REACT_APP_API}/api/auth/get-user/${uid}`
+      );
 
-  //       setUserInfo({
-  //         ...userInfo,
-  //         user: data.user,
-  //         token: data.token,
-  //       });
+      if (getUser.data.success) {
+        data = {
+          user: getUser.data.user,
+          token: idtoken,
+        };
+
+        setUserInfo({
+          ...userInfo,
+          user: data.user,
+          token: data.token,
+        });
   
-  //       localStorage.setItem("gramo", JSON.stringify(data));
-  //     }
+        localStorage.setItem("gramo", JSON.stringify(data));
+      }
 
-  //     navigate("/");
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -147,7 +148,7 @@ const LoginPage = () => {
               <button
                 type="submit"
                 className="btn submitbtn googlebtn"
-                // onClick={loginwithGoogle}
+                onClick={loginwithGoogle}
               >
                 <FaGoogle className="me-2" />
                 Log in with Google
