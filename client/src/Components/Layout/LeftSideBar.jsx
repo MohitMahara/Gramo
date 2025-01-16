@@ -65,10 +65,10 @@ const LeftSideBar = () => {
 
           <li className="nav-item">
             <NavLink className="nav-link" to="/profile">
-              {userInfo?.user.photo ? (
+              {userInfo?.user.photoURL ? (
                 <>
                   <img
-                    src={userInfo?.user.photo}
+                    src={userInfo?.user.photoURL}
                     className="profileIcon-small"
                     alt="profile pic"
                   />

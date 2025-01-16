@@ -12,7 +12,7 @@ const ProfilePage = () => {
         <div className="profilePageContainer">
           <div className="profile-card">
             <div className="infoContainer d-flex">
-              <img src={userInfo?.user.photo} alt="Profile Picture" className="profileIcon" />
+              <img src={userInfo?.user.photoURL} alt="Profile Picture" className="profileIcon" />
               <div className="user-info">
                 <div className="d-flex">
                    <p className="username">{userInfo?.user.username}</p>  

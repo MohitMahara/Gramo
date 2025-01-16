@@ -134,19 +134,19 @@ export const usernameExistsController = async(req, res) =>{
 export const signUpWithGoogleController = async(req, res) =>{
     try {
        
-      const {user} = req.body;
+      const {userData} = req.body;
 
 
-       const name  = user.name
-       const email  =  user.email
-       const photo  = user.photo
-       const username  = user.username
-       const googleId =  user.uid
+       const name  = userData.name
+       const email  =  userData.email
+       const photo  = userData.photo
+       const username  = userData.username
+       const googleId =  userData.uid
 
        const isExists = await userModel.findOne({email});
-
+       
        if(!isExists){
-          const User = await new userModel({
+          const user = await new userModel({
               name : name,
               email: email,
               photoURL : photo,
@@ -156,11 +156,19 @@ export const signUpWithGoogleController = async(req, res) =>{
               authProvider : "google"
 
           }).save();
+
+          return res.status(200).send({
+            msg : "User Registered Successfully",
+            success : true,
+            user
+           })
+
        }
 
        return res.status(200).send({
         msg : "User Registered Successfully",
-        success : true
+        success : true,
+        isExists
        })
         
     } catch (error) {
@@ -209,12 +217,12 @@ export const getUserController = async(req, res) =>{
 export const updateProfileController = async(req, res) =>{
     try {
         const uid = req.params.uid;
-        const {name , username, profilePic} = req.body;
+        const {name , username, imgPath} = req.body;
 
         
         const user = await userModel.findOneAndUpdate(
-            { uid : uid},
-            {name : name, username : username, profilePic : profilePic},
+            { _id : uid},
+            {name : name, username : username, photoURL : imgPath},
             { new: true }
         );
 

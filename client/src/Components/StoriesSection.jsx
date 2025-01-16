@@ -33,7 +33,7 @@ const StoriesSection = () => {
             {/* logged in user's profile and story */}
             <div className="d-flex userProfile ms-3 story">
               <img
-                src={userInfo?.user.photo}
+                src={userInfo?.user.photoURL}
                 className="profileIcon"
                 alt="profile pic"
               />

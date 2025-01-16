@@ -58,23 +58,25 @@ const LoginPage = () => {
       const username = generateUsername(data.displayName);
       const token = snapshot?._tokenResponse.idToken;
 
-      const user = {
+      const userData = {
           name : data.displayName,
           email : data.email,
-          photo : data.photoURL,
+          photoURL : data.photoURL,
           username : username,
           googleId : data.uid
       }
 
        
-
       const res = await axios.post(
         `${process.env.REACT_APP_API}/api/auth/register-google`,{
-          user,
+          userData,
         }
       );
 
-        
+      if(res.data.success){
+
+        const user = res.data?.isExists || res.data?.user;
+
         setUserInfo({
           ...userInfo,
           user: user,
@@ -84,6 +86,9 @@ const LoginPage = () => {
         localStorage.setItem("gramo", JSON.stringify({user, token}));
 
         navigate("/");
+      }
+
+
 
     } catch (error) {
       console.log(error);

@@ -21,6 +21,6 @@ router.get("/get-user/:uid", getUserController);
 
 router.post("/register-google", signUpWithGoogleController);
 
-router.put("/update-profile/:uid", requireSignIn, updateProfileController);
+router.put("/update-profile/:uid", updateProfileController);
 
 export default router;

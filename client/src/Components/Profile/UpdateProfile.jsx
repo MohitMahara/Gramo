@@ -3,7 +3,7 @@ import { Button, Modal } from "antd";
 import axios from "axios";
 import { UseFirebase } from "../../Contexts/firebase";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-
+import {toast} from "react-toastify";
 import { firebaseApp } from "../../Contexts/firebase";
 
 const UpdateProfile = () => {
@@ -46,17 +46,29 @@ const UpdateProfile = () => {
 
      const imgPath = await getDownloadURL(storageRef);
 
-     console.log("Name", name);
-     console.log("Username", username);
-     console.log("imgPath", imgPath);
+     const uid = userInfo?.user?._id ;
 
-    //  const res = await axios.put(`${process.env.REACT_APP_API}/api/auth/update-profile/${userInfo?.user?._id}`, 
-    //     {name, username, imgPath}
-    //   );
+     const res = await axios.put(`${process.env.REACT_APP_API}/api/auth/update-profile/${uid}`, 
+        {name, username, imgPath}
+      );
 
-    //   if(res.data.success){
-    //     setIsModalOpen(false);
-    //   }
+      if(res.data.success){
+
+        const updatedUserInfo = {
+          ...userInfo,
+          user: res.data.user,
+          token: userInfo.token,
+        };
+
+        setUserInfo(updatedUserInfo);
+      
+        localStorage.setItem('Gramo', JSON.stringify(updatedUserInfo));
+
+        setIsModalOpen(false);
+      }
+      else{
+        toast(res.data.msg);
+      }
         
      } catch (error) {
         console.log(error);
