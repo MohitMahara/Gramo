@@ -4,7 +4,8 @@ import {
   getUserController,
   updateProfileController,
   loginController,
-  usernameExistsController
+  usernameExistsController,
+  signUpWithGoogleController
 } from "../controllers/authController.js";
 import { requireSignIn } from "../middlewares/authMiddlewares.js";
 
@@ -17,6 +18,8 @@ router.post("/login", loginController);
 router.post("/username-exists", usernameExistsController);
 
 router.get("/get-user/:uid", getUserController);
+
+router.post("/register-google", signUpWithGoogleController);
 
 router.put("/update-profile/:uid", requireSignIn, updateProfileController);
 

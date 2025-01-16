@@ -14,6 +14,16 @@ const userModel = new mongoose.Schema({
      unique : true
    },
 
+   authProvider : {
+    type : String
+   },
+
+   googleId : {
+    type : String,
+    unique : true
+
+   },
+
    email : {
     type : String,
     required : true,
@@ -22,10 +32,9 @@ const userModel = new mongoose.Schema({
 
    password : {
     type : String,
-    required : true
    },
 
-   profilePic : {
+   photoURL : {
      type : String,
    }
 

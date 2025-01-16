@@ -32,7 +32,9 @@ export const registerController = async(req, res) =>{
             email : email,
             username : username,
             password : hashedPassword,
-            profilePic : ""
+            authProvider : "email",
+            googleId : null,
+            photoURL : null,
         }).save();
 
         res.status(200).send({
@@ -126,6 +128,53 @@ export const usernameExistsController = async(req, res) =>{
     }
 }
 
+
+
+
+export const signUpWithGoogleController = async(req, res) =>{
+    try {
+       
+      const {user} = req.body;
+
+
+       const name  = user.name
+       const email  =  user.email
+       const photo  = user.photo
+       const username  = user.username
+       const googleId =  user.uid
+
+       const isExists = await userModel.findOne({email});
+
+       if(!isExists){
+          const User = await new userModel({
+              name : name,
+              email: email,
+              photoURL : photo,
+              password : null,
+              username : username,
+              googleId : googleId,
+              authProvider : "google"
+
+          }).save();
+       }
+
+       return res.status(200).send({
+        msg : "User Registered Successfully",
+        success : true
+       })
+        
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({
+            msg : "Internal Server Error",
+            success : false,
+        })
+    }
+}
+
+
+
+
 export const getUserController = async(req, res) =>{
     try {
         const uid = req.params.uid;
@@ -153,6 +202,8 @@ export const getUserController = async(req, res) =>{
         })
     }
 }
+
+
 
 
 export const updateProfileController = async(req, res) =>{

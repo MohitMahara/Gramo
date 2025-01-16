@@ -12,21 +12,20 @@ import { CiCompass1 } from "react-icons/ci";
 const LeftSideBar = () => {
   const { userInfo, setUserInfo } = UseFirebase();
 
-  const handleSubmit = () =>{
+  const handleSubmit = () => {
     try {
       setUserInfo({
         ...userInfo,
-        user : null,
-        token : null
-      })
+        user: null,
+        token: null,
+      });
 
-      localStorage.removeItem('gramo');
-      
+      localStorage.removeItem("gramo");
     } catch (error) {
       console.log(error);
     }
-  }
- 
+  };
+
   return (
     <div className="leftContainer" style={{ minHeight: "95vh" }}>
       <NavLink className="navbar-brand d-flex" to="/">
@@ -66,7 +65,17 @@ const LeftSideBar = () => {
 
           <li className="nav-item">
             <NavLink className="nav-link" to="/profile">
-              <CiUser className="nav-icon" />
+              {userInfo?.user.photo ? (
+                <>
+                  <img
+                    src={userInfo?.user.photo}
+                    className="profileIcon-small"
+                    alt="profile pic"
+                  />
+                </>
+              ) : (
+                <CiUser className="nav-icon" />
+              )}
               {userInfo?.user.name}
             </NavLink>
           </li>
@@ -80,10 +89,10 @@ const LeftSideBar = () => {
           {userInfo?.user ? (
             <>
               <li className="nav-item">
-              <div className="nav-link" onClick={handleSubmit}>
-                  <IoIosLogOut className="nav-icon"/>
+                <div className="nav-link" onClick={handleSubmit}>
+                  <IoIosLogOut className="nav-icon" />
                   Logout
-              </div>
+                </div>
               </li>
             </>
           ) : null}

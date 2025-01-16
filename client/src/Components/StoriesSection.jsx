@@ -1,8 +1,10 @@
-import React, {useRef} from 'react'
+import React, {useRef} from 'react';
+import { UseFirebase } from '../Contexts/firebase';
 
 const StoriesSection = () => {
 
     const scrollContainer = useRef();
+    const {userInfo} = UseFirebase();
 
     const scrollLeft =() =>{
        if(scrollContainer.current){
@@ -31,7 +33,7 @@ const StoriesSection = () => {
             {/* logged in user's profile and story */}
             <div className="d-flex userProfile ms-3 story">
               <img
-                src="android-chrome-192x192.png"
+                src={userInfo?.user.photo}
                 className="profileIcon"
                 alt="profile pic"
               />

@@ -8,24 +8,16 @@ import { firebaseApp } from "../../Contexts/firebase";
 
 const UpdateProfile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [name , setName] = useState("");
-  const [username, setUsername] = useState("");
-  const [profilePic, setProfilePic] = useState("");
   const { userInfo, setUserInfo } = UseFirebase();
 
-  const setInitialValues = async() =>{
-    try {
-       const res = await axios.get(`${process.env.REACT_APP_API}/api/auth/get-user/${userInfo?.user?.uid}`);
-       if(res.data.success){
-        setName(res.data.user.name);
-        setUsername(res.data.user.username);
-        if(res.data.user.profilePic){
-           setProfilePic(res.data.user.profilePic);
-        }
-       }
-    } catch (error) {
-      console.log(error);
-    }
+  const [name , setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [photo, setPhoto] = useState("");
+
+  const setInitialValues = () =>{
+        setName(userInfo?.user.name);
+        setUsername(userInfo?.user.username);
+        setPhoto(userInfo?.user.photo);
   }
 
   useEffect(() =>{
@@ -45,22 +37,26 @@ const UpdateProfile = () => {
      try {
 
      const storage = getStorage(firebaseApp);
-     const uniqueFileName = `${Date.now()}_${profilePic.name}`;
-     const storageRef = ref(storage, `Files/Images/${uniqueFileName}`);
+     const uniqueFileName = `${Date.now()}_${photo.name}`;
+     const storageRef = ref(storage, `Files/ProfilePicture/${uniqueFileName}`);
 
-     await uploadBytes(storageRef, profilePic).then((snapshot) =>{
+     await uploadBytes(storageRef, photo).then((snapshot) =>{
          console.log("Uploaded a file");
      })
 
-      const imgPath = await getDownloadURL(storageRef);
+     const imgPath = await getDownloadURL(storageRef);
 
-      const res = await axios.put(`${process.env.REACT_APP_API}/api/auth/update-profile/${userInfo?.user?.uid}`, 
-        {name, username, imgPath}
-      );
+     console.log("Name", name);
+     console.log("Username", username);
+     console.log("imgPath", imgPath);
 
-      if(res.data.success){
-        setIsModalOpen(false);
-      }
+    //  const res = await axios.put(`${process.env.REACT_APP_API}/api/auth/update-profile/${userInfo?.user?._id}`, 
+    //     {name, username, imgPath}
+    //   );
+
+    //   if(res.data.success){
+    //     setIsModalOpen(false);
+    //   }
         
      } catch (error) {
         console.log(error);
@@ -88,7 +84,7 @@ const UpdateProfile = () => {
               id="profilePic"
               placeholder='Upload a picture'
               onChange={(e) =>{
-                setProfilePic(e.target.files[0])
+                setPhoto(e.target.files[0])
               }}
             />
           </div>

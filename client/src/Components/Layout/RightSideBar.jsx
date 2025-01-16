@@ -11,7 +11,7 @@ const RightSideBar = () => {
 
       <div className="d-flex userProfile">
         <div className="d-flex">
-          <img src="android-chrome-192x192.png" className="profileIcon" alt="profile pic" />
+          <img src={userInfo?.user.photo} className="profileIcon" alt="profile pic" />
            <div>
                  <p className="username">{userInfo?.user.username}</p>
                  <p className="name">{userInfo?.user.name}</p>

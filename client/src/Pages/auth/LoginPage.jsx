@@ -52,44 +52,39 @@ const LoginPage = () => {
   const loginwithGoogle = async (e) => {
     e.preventDefault();
     try {
+
       const snapshot = await signInGoogle();
-      const name = snapshot?.user.displayName;
-      const uid = snapshot?.user.uid;
-      const email = snapshot?.user.email;
-      const idtoken = snapshot?._tokenResponse.idToken;
-      const username = generateUsername(name);
+      const data = snapshot?.user;
+      const username = generateUsername(data.displayName);
+      const token = snapshot?._tokenResponse.idToken;
+
+      const user = {
+          name : data.displayName,
+          email : data.email,
+          photo : data.photoURL,
+          username : username,
+          googleId : data.uid
+      }
+
+       
 
       const res = await axios.post(
-        `${process.env.REACT_APP_API}/api/auth/register`,
-        {
-          name,
-          email,
-          username,
-          uid,
+        `${process.env.REACT_APP_API}/api/auth/register-google`,{
+          user,
         }
       );
 
-      let data;
-      const getUser = await axios.get(
-        `${process.env.REACT_APP_API}/api/auth/get-user/${uid}`
-      );
-
-      if (getUser.data.success) {
-        data = {
-          user: getUser.data.user,
-          token: idtoken,
-        };
-
+        
         setUserInfo({
           ...userInfo,
-          user: data.user,
-          token: data.token,
+          user: user,
+          token: token,
         });
   
-        localStorage.setItem("gramo", JSON.stringify(data));
-      }
+        localStorage.setItem("gramo", JSON.stringify({user, token}));
 
-      navigate("/");
+        navigate("/");
+
     } catch (error) {
       console.log(error);
     }

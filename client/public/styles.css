@@ -115,6 +115,13 @@
     border-radius: 25px;
 }
 
+
+.profileIcon-small{
+    width: 25px;
+    border-radius: 15px;
+}
+
+
 .rightContainer .userProfile .username{
   font-family: 'Poppins',system-ui;
   font-weight: 600;
