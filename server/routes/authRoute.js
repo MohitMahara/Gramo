@@ -7,6 +7,7 @@ import {
   usernameExistsController,
   signUpWithGoogleController
 } from "../controllers/authController.js";
+
 import { requireSignIn } from "../middlewares/authMiddlewares.js";
 
 const router = express.Router();

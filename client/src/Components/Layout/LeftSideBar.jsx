@@ -1,13 +1,14 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { PiDotsThreeCircle } from "react-icons/pi";
-import { UseFirebase } from "../../Contexts/firebase";
 import { IoIosLogOut } from "react-icons/io";
 import { GoHome } from "react-icons/go";
 import { IoMdSearch } from "react-icons/io";
 import { CiLocationArrow1 } from "react-icons/ci";
 import { CiUser } from "react-icons/ci";
 import { CiCompass1 } from "react-icons/ci";
+import { UseFirebase } from "../../Contexts/firebase";
+import { IoMdAdd } from "react-icons/io";
 
 const LeftSideBar = () => {
   const { userInfo, setUserInfo } = UseFirebase();
@@ -43,23 +44,30 @@ const LeftSideBar = () => {
           </li>
 
           <li className="nav-item">
-            <NavLink className="nav-link" to="/product">
+            <NavLink className="nav-link" to="/search">
               <IoMdSearch className="nav-icon" />
               Search
             </NavLink>
           </li>
 
           <li className="nav-item">
-            <NavLink className="nav-link" to="/product">
+            <NavLink className="nav-link" to="/explore">
               <CiCompass1 className="nav-icon" />
               Explore
             </NavLink>
           </li>
 
           <li className="nav-item">
-            <NavLink className="nav-link" to="/product">
+            <NavLink className="nav-link" to="/chat">
               <CiLocationArrow1 className="nav-icon" />
               Messages
+            </NavLink>
+          </li>
+
+          <li className="nav-item">
+            <NavLink className="nav-link" to="/create-post">
+             <IoMdAdd  className="nav-icon"/>
+              Create
             </NavLink>
           </li>
 
