@@ -1,47 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React  from "react";
 import LeftSideBar from "../../Components/Layout/LeftSideBar";
 import { UseFirebase } from "../../Contexts/firebase";
 import UpdateProfile from "../../Components/Profile/UpdateProfile";
-import axios from "axios";
-import { Modal } from "antd";
-import Posts from "../../Components/PostsComponents/Posts";
+import AllPosts from "../../Components/PostsComponents/AllPosts";
 
 const ProfilePage = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedPost, setSelectedPost] = useState(null);
+ 
   const { userInfo } = UseFirebase();
-  const [posts, setPosts] = useState([]);
-
-  const getPosts = async () => {
-    try {
-      const username = userInfo?.user.username;
-      const res = await axios.get(
-        `${process.env.REACT_APP_API}/api/posts/get-posts/${username}`
-      );
-
-      if (res.data.success) {
-        setPosts(res.data.posts);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    getPosts();
-  }, []);
-
-
-
-  const handlePostClick = (post) =>{
-    setSelectedPost(post);
-    setIsModalOpen(true);
-  }
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-    setSelectedPost(null);
-  };
 
   return (
     <>
@@ -70,46 +35,13 @@ const ProfilePage = () => {
               </div>
             </div>
             <hr className="mt-3" />
-
-            <Modal
-               open={isModalOpen}
-               onCancel={handleCancel}
-               footer={null}
-            >
-
-            {selectedPost ? <>
-
-             <Posts/>
-            </> : null}
-
-
-            </Modal>
-            <div className="posts">
-              <p className="text-center">Posts</p>
-              <div className="posts-container container-fluid">
-                {posts.map((post) => {
-                  return post.fileURL ? (
-                    <>
-                        <div className="post-card card mt-2 ms-2" onClick={() => {handlePostClick(post)} } >
-                          <img src={post.fileURL} className="img" />
-                        </div>
-                    </>
-                  ) : (
-                    <>
-                         <div className="post-card card mt-2 ms-2 bg-dark text-light" onClick={() => {handlePostClick(post)}}>
-                          <p className="card-body">{post.caption}</p>
-                        </div>
-                      
-                    </>
-                  );
-                })}
-              </div>
-            </div>
+             <AllPosts/>
           </div>
         </div>
       </div>
     </>
   );
-};
+}
+
 
 export default ProfilePage;

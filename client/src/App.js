@@ -7,6 +7,7 @@ import ProfilePage from "./Pages/auth/ProfilePage";
 import ProtectedRoutes from "./Components/Routes/ProtectedRoutes";
 import PublicRoutes from "./Components/Routes/PublicRoutes";
 import CreatePost from "./Pages/posts/createPost";
+import { PostProvider } from "./Components/PostsComponents/PostContext";
 
 function App() {
   return (
@@ -18,7 +19,7 @@ function App() {
 
       <Route element={<ProtectedRoutes />}>
         <Route path="/" element={<HomePage />} />
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profile" element={<PostProvider><ProfilePage /></PostProvider>} />
         <Route path="/create-post" element={<CreatePost/>} />
       </Route>
     </Routes>

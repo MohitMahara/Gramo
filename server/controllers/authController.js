@@ -185,8 +185,8 @@ export const signUpWithGoogleController = async(req, res) =>{
 
 export const getUserController = async(req, res) =>{
     try {
-        const uid = req.params.uid;
-        const user =  await userModel.findOne({uid : uid});
+        const username = req.params.username;
+        const user =  await userModel.findOne({username});
 
         if(!user){
             return res.status(404).send({

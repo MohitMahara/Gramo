@@ -43,6 +43,7 @@ export const getPostController = async(req, res) =>{
      const username = req.params.username;
 
     const posts = await postModel.find({username});
+    
 
     return res.status(200).send({
         msg : "User posts",
@@ -58,4 +59,64 @@ export const getPostController = async(req, res) =>{
         error
     })
   }
+}
+
+
+
+
+export const deletePostController = async(req, res) =>{
+    try {
+        const pid = req.params.pid;
+
+        const deletedPost = await postModel.findByIdAndDelete(pid);
+
+        if(!deletedPost){
+            return res.status(404).send({
+                msg : "Post not Found",
+                success : false,
+            })
+        }
+        
+        return res.status(200).send({
+            msg : "Post deleted successfully",
+            success : true
+        })
+
+    } catch (error) {
+        res.status(500).send({
+            msg : "Error while deleting Post",
+            success : false, 
+            error
+        })
+    }
+}
+
+
+export const updatePostController = async(req, res) =>{
+   try {
+     const pid = req.params.pid;
+     const {caption} = req.body;
+
+     const updatedPost = await postModel.findByIdAndUpdate(pid, {caption}, {new : true});
+
+     if(!updatedPost){
+         return res.status(404).send({
+             msg : "Post not Found",
+             success : false,
+         })
+     }
+
+     
+     return res.status(200).send({
+         msg : "Post Updated successfully",
+         success : true
+     })
+
+   } catch (error) {
+    res.status(500).send({
+        msg : "Error while updating Post",
+        success : false, 
+        error
+    })
+   }
 }

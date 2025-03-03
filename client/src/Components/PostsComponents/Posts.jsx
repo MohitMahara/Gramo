@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import { CiHeart } from "react-icons/ci";
 import { RiChat1Line } from "react-icons/ri";
 import { CiLocationArrow1 } from "react-icons/ci";
@@ -6,9 +6,18 @@ import { CiSaveUp2 } from "react-icons/ci";
 import { RiCollapseDiagonalFill } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import CommentSec from "./CommentSec";
+import ViewerMenu from "./ViewerMenu";
+import OwnerMenu from "./OwnerMenu";
+import moment from "moment";
+import axios from "axios";
+import { UseFirebase } from "../../Contexts/firebase";
 
 
-const Posts = () => {
+const Posts = ({post, setIsModalOpen, setIsEditModalOpen}) => {
+
+  const username = post?.username;
+  const [user, setUser] = useState(null);
+  const {userInfo} = UseFirebase();
 
   const comments = [
     { user: "MOHIT", text: "fantastic" },
@@ -27,18 +36,39 @@ const Posts = () => {
     setShowAllComments(!showAllComments);
   };
 
+
+  const getUser = async() =>{
+    try {
+      const res = await axios.get(`${process.env.REACT_APP_API}/api/auth/get-user/${username}`);
+
+      if(res.data.success){
+         setUser(res.data.user);
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+  useEffect(() =>{
+   getUser();
+  },[])
+
+
   return (
     <>
-      <div className="posts card">
+      <div className="posts ">
 
-        <div className="d-flex userProfile mt-3">
-          <img src="android-chrome-192x192.png" className="profileIcon" alt="profile pic" />
-               <p className="profile-name">mohit_mahara171</p>
-               <p className="post-date"><sup>.</sup> 6d</p>
+        <div className="d-flex userProfile mt-3 mb-3">
+               <img src={user?.photoURL} className="profileIcon" alt="profile pic" />
+               <p className="profile-name">{username}</p>
+               <p className="post-date"><sup>.</sup> {moment(post?.createdAt).fromNow()}</p>
+               {userInfo?.user?.username == username ? <OwnerMenu post = {post} setIsModalOpen={setIsModalOpen} setIsEditModalOpen={setIsEditModalOpen}/> : <ViewerMenu post = {post} setIsModalOpen={setIsModalOpen}/>}
         </div>
 
-        <div className="card-body post-image">
-          <img src="android-chrome-192x192.png" className="card-img-top" />
+        <div className="post-image">
+          <img src={post?.fileURL} className="card-img-top" />
           <div className="post-info">
             <div className="post-activity">
               <CiHeart className="postIcon likeIcon" />
@@ -49,8 +79,7 @@ const Posts = () => {
             <div className="post-text">
               <p className="likes">23675 likes</p>
               <p className="caption">
-                To standardize the icon's internal stroke (which might look like
-                a "border" in some cases).
+               {post?.caption}
               </p>
             </div>
           </div>

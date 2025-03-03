@@ -18,7 +18,7 @@ router.post("/login", loginController);
 
 router.post("/username-exists", usernameExistsController);
 
-router.get("/get-user/:uid", getUserController);
+router.get("/get-user/:username", getUserController);
 
 router.post("/register-google", signUpWithGoogleController);
 
