@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { CiHeart } from "react-icons/ci";
 import { RiChat1Line } from "react-icons/ri";
 import { CiLocationArrow1 } from "react-icons/ci";
@@ -12,24 +12,16 @@ import moment from "moment";
 import axios from "axios";
 import { UseFirebase } from "../../Contexts/firebase";
 
-
-const Posts = ({post, setIsModalOpen, setIsEditModalOpen}) => {
-
+const Posts = ({ post, setIsModalOpen, setIsEditModalOpen }) => {
   const username = post?.username;
+  
   const [user, setUser] = useState(null);
-  const {userInfo} = UseFirebase();
+  const { userInfo } = UseFirebase();
+  const [liked, setLiked] = useState(false);
+  const [likes, setLikes] = useState([]);
 
-  const comments = [
-    { user: "MOHIT", text: "fantastic" },
-    { user: "John", text: "Awesome fantastic this is the thing that i am talking about. This project gonna blow everyone's mind. You know what if i add some more lines in this paragraph then the comment section gonna overfall and this is the best way to test this." },
-    { user: "Eren", text: "start the rembeling" },
-    { user: "Mikasha", text: "Stop" },
-    { user: "MOHIT", text: "fantastic" },
-    { user: "John", text: "Awesome" },
-    { user: "Eren", text: "start the rembeling" },
-    { user: "Mikasha", text: "Stop" },
-  ];
-
+  const [commentText, setCommentText] = useState("");
+  const [comments, setComments] = useState([]);
   const [showAllComments, setShowAllComments] = useState(false);
 
   const handleToggleComments = () => {
@@ -37,90 +29,171 @@ const Posts = ({post, setIsModalOpen, setIsEditModalOpen}) => {
   };
 
 
-  const getUser = async() =>{
+  const handleCommentBtn = async() =>{
     try {
-      const res = await axios.get(`${process.env.REACT_APP_API}/api/auth/get-user/${username}`);
+      
+      if(!commentText || commentText == "") return;
+
+      const res = await axios.post(`${process.env.REACT_APP_API}/api/posts/add-comment/${post?._id}/${userInfo?.user._id}`, {commentText});
+
+      setCommentText("");
 
       if(res.data.success){
-         setUser(res.data.user);
+        getComments();
+        console.log(comments);
       }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
+  const handleToggleLikes = async () => {
+    try {
+      const postId = post?._id;
+      const userId = userInfo?.user?._id;
+
+      const res = await axios.post(
+        `${process.env.REACT_APP_API}/api/posts/${postId}/${userId}/like`
+      );
+
+      if (res.data.success) {
+        const liked = res.data.liked;
+        setLiked(liked);
+        getLikes();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getUser = async () => {
+    try {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API}/api/auth/get-user/${username}`
+      );
+
+      if (res.data.success) {
+        setUser(res.data.user);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+  const getLikes = async() =>{
+    try {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API}/api/posts/get-likes/${post?._id}`
+      );
+
+      if (res.data.success) {
+        setLikes(res.data.likes);
+      }
     } catch (error) {
       console.log(error);
     }
   }
 
 
-  useEffect(() =>{
-   getUser();
-  },[])
 
+  const getComments = async() =>{
+    try {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API}/api/posts/get-comments/${post?._id}`
+      );
+
+      if (res.data.success) {
+        setComments(res.data.comments);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+  useEffect(() => {
+    getUser();
+    getLikes();
+    getComments();
+  }, []);
 
   return (
     <>
       <div className="posts ">
-
         <div className="d-flex userProfile mt-3 mb-3">
-               <img src={user?.photoURL} className="profileIcon" alt="profile pic" />
-               <p className="profile-name">{username}</p>
-               <p className="post-date"><sup>.</sup> {moment(post?.createdAt).fromNow()}</p>
-               {userInfo?.user?.username == username ? <OwnerMenu post = {post} setIsModalOpen={setIsModalOpen} setIsEditModalOpen={setIsEditModalOpen}/> : <ViewerMenu post = {post} setIsModalOpen={setIsModalOpen}/>}
+          <img src={user?.photoURL} className="profileIcon" alt="profile pic" />
+          <p className="profile-name">{username}</p>
+          <p className="post-date">
+            <sup>.</sup> {moment(post?.createdAt).fromNow()}
+          </p>
+          {userInfo?.user?.username == username ? (
+            <OwnerMenu
+              post={post}
+              setIsModalOpen={setIsModalOpen}
+              setIsEditModalOpen={setIsEditModalOpen}
+            />
+          ) : (
+            <ViewerMenu post={post} setIsModalOpen={setIsModalOpen} />
+          )}
         </div>
 
         <div className="post-image">
           <img src={post?.fileURL} className="card-img-top" />
           <div className="post-info">
             <div className="post-activity">
-              <CiHeart className="postIcon likeIcon" />
-              <RiChat1Line className="postIcon commentIcon" onClick={handleToggleComments}/>
+              {liked ? (
+                  <CiHeart className="postIcon likeIcon bg-danger" onClick={handleToggleLikes}/>
+              ) : (
+                  <CiHeart className="postIcon likeIcon" onClick={handleToggleLikes}/>
+              )}
+
+              <RiChat1Line className="postIcon commentIcon"  onClick={handleToggleComments}/>
               <CiLocationArrow1 className="postIcon shareIcon" />
               <CiSaveUp2 className="ms-auto postIcon saveIcon" />
             </div>
             <div className="post-text">
-              <p className="likes">23675 likes</p>
-              <p className="caption">
-               {post?.caption}
-              </p>
+              <p className="likes">{likes.length} likes</p>
+              <p className="caption">{post?.caption}</p>
             </div>
           </div>
         </div>
 
         <div className="comment-section">
-        {showAllComments ? (
-          <>
-            <div className="comments-header d-flex mb-3">
-              <h5>Comments</h5>
-              <RiCollapseDiagonalFill
-                onClick={handleToggleComments}
-                className="ms-auto cmtcollapsebtn"
-              />
-            </div>
-          </>
-        ) : null}
-        <div className="comments">
           {showAllComments ? (
             <>
-              {comments.map((comment, index) => {
-                return (
-                    <CommentSec comment = {comment} index ={index} />
-                );
-              })}
+              <div className="comments-header d-flex mb-3">
+                <h5>Comments</h5>
+                <RiCollapseDiagonalFill
+                  onClick={handleToggleComments}
+                  className="ms-auto cmtcollapsebtn"
+                />
+              </div>
             </>
-          ) : (
-            <Link className="all-comments" onClick={handleToggleComments}>View all comments</Link>
-          )}
+          ) : null}
+          <div className="comments">
+            {showAllComments ? (
+              <>
+                {comments.map((comment, index) => {
+                  return <CommentSec comment={comment} index={index} />;
+                })}
+              </>
+            ) : (
+              <Link className="all-comments" onClick={handleToggleComments}>
+                View all comments
+              </Link>
+            )}
+          </div>
+
+          {showAllComments ? (
+            <>
+              <div className="addComment">
+                <input type="text" placeholder="Add a comment..." value={commentText} onChange={(e) => setCommentText(e.target.value)}/>
+                <p onClick={handleCommentBtn}>Add</p>
+              </div>
+            </>
+          ) : null}
         </div>
-
-        {showAllComments ? (
-          <>
-            <div className="addComment">
-              <input type="text" placeholder="Add a comment..." />
-              <p>Add</p>
-            </div>
-          </>
-        ) : null}
-      </div>
-
       </div>
     </>
   );

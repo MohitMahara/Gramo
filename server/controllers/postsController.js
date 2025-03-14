@@ -1,3 +1,5 @@
+import commentsModel from "../models/commentsModel.js";
+import likesModel from "../models/likesModel.js";
 import postModel from "../models/postModel.js";
 
 export const createPostsController = async(req, res) => {
@@ -119,4 +121,119 @@ export const updatePostController = async(req, res) =>{
         error
     })
    }
+}
+
+
+export const likesController = async (req, res) =>{
+     try {
+        const userId = req.params.userId;
+        const postId = req.params.postId;
+
+        const likeExist = await likesModel.findOne({userId : userId, postId : postId});
+
+        if(likeExist){
+          await likesModel.deleteOne({userId : userId, postId : postId});
+          return res.status(200).send({
+             success : true,
+             liked : false,
+             msg : "unliked the post successfully"
+          })
+        }
+        else{
+           const like = new likesModel({
+              userId, 
+              postId
+           }).save();
+
+           return res.status(200).send({
+            success : true,
+            liked : true,
+            msg : "Liked the post successfully"
+           })
+        }
+
+     } catch (error) {
+        res.status(500).send({
+          msg : "Internal server error",
+          success : false,
+          error
+        })
+     }
+}
+
+
+
+export const getlikesController = async (req, res) =>{
+    try {
+        const postId = req.params.postId;
+        
+        const likes = await likesModel.find({postId : postId});
+
+        return res.status(200).send({
+          success : true,
+          msg : "Liked By",
+          likes
+        })
+
+    } catch (error) {
+        res.status(500).send({
+            success : false, 
+            msg : "Error while getting likes",
+            error
+        })
+    }
+}
+
+
+
+
+export const getCommentsController = async (req, res) =>{
+    try {
+        const postId = req.params.postId;
+        
+        const comments = await commentsModel.find({postId : postId}).populate("userId", "username photoURL");
+
+        return res.status(200).send({
+          success : true,
+          msg : "all comments",
+          comments
+        })
+
+    } catch (error) {
+        res.status(500).send({
+            success : false, 
+            msg : "Error while getting comments",
+            error
+        })
+    }
+}
+
+
+
+export const addCommentController = async(req, res) =>{
+    try {
+        const postId = req.params.postId;
+        const userId = req.params.userId;
+        const {commentText} = req.body;
+
+        if(!commentText) return res.status(300).send({success : false, msg : "Comment can not be blanked"});
+
+        const comment = new commentsModel({
+            postId, 
+            userId, 
+            cmtText : commentText
+        }).save();
+        
+        return res.status(200).send({
+            msg : "Comment added Successfully",
+            success : true, 
+        })
+
+    } catch (error) {
+        return res.status(500).send({
+            msg : "Error while adding comment",
+            success : false,
+            error
+        })
+    }
 }

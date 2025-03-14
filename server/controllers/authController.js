@@ -188,6 +188,7 @@ export const getUserController = async(req, res) =>{
         const username = req.params.username;
         const user =  await userModel.findOne({username});
 
+
         if(!user){
             return res.status(404).send({
                 success : false,
