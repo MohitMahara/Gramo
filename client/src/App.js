@@ -19,7 +19,7 @@ function App() {
 
       <Route element={<ProtectedRoutes />}>
         <Route path="/" element={<HomePage />} />
-        <Route path="/profile" element={<PostProvider><ProfilePage /></PostProvider>} />
+        <Route path="/:username" element={<PostProvider><ProfilePage /></PostProvider>} />
         <Route path="/create-post" element={<CreatePost/>} />
       </Route>
     </Routes>

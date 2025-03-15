@@ -1,12 +1,34 @@
-import React  from "react";
+import React, { useEffect, useState }  from "react";
 import LeftSideBar from "../../Components/Layout/LeftSideBar";
-import { UseFirebase } from "../../Contexts/firebase";
 import UpdateProfile from "../../Components/Profile/UpdateProfile";
 import AllPosts from "../../Components/PostsComponents/AllPosts";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const ProfilePage = () => {
- 
-  const { userInfo } = UseFirebase();
+  const {username} = useParams();
+  const navigate = useNavigate();
+  const [user, setUser] = useState();
+
+  const getUser = async() =>{
+    try {
+      const res = await axios.get(`${process.env.REACT_APP_API}/api/auth/get-user/${username}`);
+
+      if(res.data.success){
+       setUser(res.data.user);
+      }
+      else{
+        alert("user not found");
+        navigate('/');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() =>{
+    getUser();
+  }, [username])
 
   return (
     <>
@@ -16,13 +38,13 @@ const ProfilePage = () => {
           <div className="profile-card">
             <div className="infoContainer d-flex">
               <img
-                src={userInfo?.user.photoURL}
+                src={user?.photoURL}
                 alt="Profile Picture"
                 className="profileIcon"
               />
               <div className="user-info">
                 <div className="d-flex">
-                  <p className="username">{userInfo?.user.username}</p>
+                  <p className="username">{user?.username}</p>
                   <UpdateProfile />
                 </div>
 
@@ -31,11 +53,11 @@ const ProfilePage = () => {
                   <p>0 following</p>
                   <p>0 followers</p>
                 </div>
-                <p>{userInfo?.user.name}</p>
+                <p>{user?.name}</p>
               </div>
             </div>
             <hr className="mt-3" />
-             <AllPosts/>
+             <AllPosts user={user}/>
           </div>
         </div>
       </div>

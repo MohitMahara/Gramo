@@ -3,29 +3,25 @@ import Posts from "../../Components/PostsComponents/Posts";
 import { UsePosts } from "./PostContext";
 import axios from "axios";
 import { Modal } from "antd";
-import { UseFirebase } from "../../Contexts/firebase";
 
-const AllPosts = () => {
+const AllPosts = ({user}) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
   const [selectedPost, setSelectedPost] = useState([]);
   const { posts, setPosts } = UsePosts();
   const [caption , setCaption] = useState("");
 
-
-  const { userInfo } = UseFirebase();
-
   const getPosts = async () => {
     try {
-      const username = userInfo?.user.username;
+      const username = user?.username;
       const res = await axios.get(
         `${process.env.REACT_APP_API}/api/posts/get-posts/${username}`
       );
 
       if (res.data.success) {
         setPosts(res.data.posts);
+
       }
     } catch (error) {
       console.log(error);
@@ -35,6 +31,7 @@ const AllPosts = () => {
   useEffect(() => {
     getPosts();
   }, []);
+
 
   const handlePostClick = (post) => {
     setSelectedPost(post);
@@ -104,7 +101,7 @@ const AllPosts = () => {
       >
         {selectedPost ? (
           <>
-            <Posts post={selectedPost} setIsModalOpen={setIsModalOpen} setIsEditModalOpen={setIsEditModalOpen} />
+            <Posts user={user} post={selectedPost} setIsModalOpen={setIsModalOpen} setIsEditModalOpen={setIsEditModalOpen} />
           </>
         ) : null}
       </Modal>

@@ -69,16 +69,23 @@ export const getPostController = async(req, res) =>{
 export const deletePostController = async(req, res) =>{
     try {
         const pid = req.params.pid;
+        
+        const Post = await postModel.findById(pid);
 
-        const deletedPost = await postModel.findByIdAndDelete(pid);
-
-        if(!deletedPost){
+        if(!Post){
             return res.status(404).send({
                 msg : "Post not Found",
                 success : false,
             })
         }
-        
+
+        await postModel.findByIdAndDelete(pid);
+
+        await likesModel.deleteMany({postId : pid});
+
+        await commentsModel.deleteMany({postId: pid});
+
+
         return res.status(200).send({
             msg : "Post deleted successfully",
             success : true
@@ -187,6 +194,39 @@ export const getlikesController = async (req, res) =>{
 
 
 
+export const hasLikedController = async (req, res) =>{
+    try {
+        const postId = req.params.postId;
+        const userId = req.params.userId;
+
+        const status =  await likesModel.findOne({postId : postId, userId : userId});
+
+        if(status){
+            return res.status(200).send({
+                msg : "user has liked the post",
+                success : true,
+                liked : true
+            })
+        }
+
+        return res.status(200).send({
+            msg : "user has  not liked the post",
+            success : true,
+            liked : false
+        })
+
+    } catch (error) {
+        return res.status(500).send({
+            msg : "Error while checking like status",
+            success : false,
+            error
+        })
+    }
+}
+
+
+
+
 export const getCommentsController = async (req, res) =>{
     try {
         const postId = req.params.postId;
@@ -236,4 +276,35 @@ export const addCommentController = async(req, res) =>{
             error
         })
     }
+}
+
+
+export const deleteCommentController = async (req, res) => {
+   try {
+      const postId = req.params.postId;
+      const cmtId = req.params.cmtId;
+
+      const comment = await commentsModel.findOne({postId : postId, _id : cmtId});
+
+      if(!comment){
+          return res.status(404).send({
+            msg : "Comment not found",
+            success : false,
+          })
+      }
+
+      await commentsModel.deleteOne({postId : postId, _id : cmtId});
+
+      return res.status(200).send({
+        msg : "comment deleted successfully",
+        success : true
+      })
+
+   } catch (error) {
+      return res.status(500).send({
+        msg : "Error while deleting comment",
+        success : false,
+        error
+      })
+   }
 }

@@ -17,8 +17,9 @@ const RegisterPage = () => {
   const navigate = useNavigate();
 
   function generateUsername(Name) {
+    let newName = Name.replace(/ /g, "_");
     const uniqueId = uuidv4().slice(0, 8);
-    return `${Name}_${uniqueId}`;
+    return `${newName}_${uniqueId}`;
   }
 
   const handleSubmit = async (e) => {
