@@ -6,16 +6,16 @@ import { CiSaveUp2 } from "react-icons/ci";
 import { RiCollapseDiagonalFill } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import CommentSec from "./CommentSec";
-import ViewerMenu from "./ViewerMenu";
-import OwnerMenu from "./OwnerMenu";
+import PostOwnerMenu from "./PostOwnerMenu";
+import PostViewerMenu from "./PostViewerMenu";
 import moment from "moment";
 import axios from "axios";
 import { UseFirebase } from "../../Contexts/firebase";
+import CmtOwnerMenu from "./CmtOwnerMenu";
+import CmtViewerMenu from "./CmtViewerMenu";
 
-const Posts = ({ post, setIsModalOpen, setIsEditModalOpen }) => {
-  const username = post?.username;
-  
-  const [user, setUser] = useState(null);
+const Posts = ({user,  post, setIsModalOpen, setIsEditModalOpen }) => {
+
   const { userInfo } = UseFirebase();
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState([]);
@@ -28,24 +28,25 @@ const Posts = ({ post, setIsModalOpen, setIsEditModalOpen }) => {
     setShowAllComments(!showAllComments);
   };
 
-
-  const handleCommentBtn = async() =>{
+  const handleCommentBtn = async () => {
     try {
-      
-      if(!commentText || commentText == "") return;
+      if (!commentText || commentText == "") return;
 
-      const res = await axios.post(`${process.env.REACT_APP_API}/api/posts/add-comment/${post?._id}/${userInfo?.user._id}`, {commentText});
+      const res = await axios.post(
+        `${process.env.REACT_APP_API}/api/posts/add-comment/${post?._id}/${userInfo?.user._id}`,
+        { commentText }
+      );
 
       setCommentText("");
 
-      if(res.data.success){
+      if (res.data.success) {
         getComments();
         console.log(comments);
       }
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const handleToggleLikes = async () => {
     try {
@@ -66,22 +67,8 @@ const Posts = ({ post, setIsModalOpen, setIsEditModalOpen }) => {
     }
   };
 
-  const getUser = async () => {
-    try {
-      const res = await axios.get(
-        `${process.env.REACT_APP_API}/api/auth/get-user/${username}`
-      );
 
-      if (res.data.success) {
-        setUser(res.data.user);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-
-  const getLikes = async() =>{
+  const getLikes = async () => {
     try {
       const res = await axios.get(
         `${process.env.REACT_APP_API}/api/posts/get-likes/${post?._id}`
@@ -93,11 +80,9 @@ const Posts = ({ post, setIsModalOpen, setIsEditModalOpen }) => {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
-
-
-  const getComments = async() =>{
+  const getComments = async () => {
     try {
       const res = await axios.get(
         `${process.env.REACT_APP_API}/api/posts/get-comments/${post?._id}`
@@ -109,32 +94,44 @@ const Posts = ({ post, setIsModalOpen, setIsEditModalOpen }) => {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
+  const hasLiked = async () => {
+    try {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API}/api/posts/has-liked/${post?._id}/${userInfo?.user._id}`
+      );
+      if (res.data.success) {
+        setLiked(res.data.liked);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
-    getUser();
     getLikes();
     getComments();
-  }, []);
+    hasLiked();
+  }, [post]);
 
   return (
     <>
       <div className="posts ">
         <div className="d-flex userProfile mt-3 mb-3">
           <img src={user?.photoURL} className="profileIcon" alt="profile pic" />
-          <p className="profile-name">{username}</p>
+          <p className="profile-name">{user?.username}</p>
           <p className="post-date">
             <sup>.</sup> {moment(post?.createdAt).fromNow()}
           </p>
-          {userInfo?.user?.username == username ? (
-            <OwnerMenu
+          {userInfo?.user?.username == user?.username ? (
+            <PostOwnerMenu
               post={post}
               setIsModalOpen={setIsModalOpen}
               setIsEditModalOpen={setIsEditModalOpen}
             />
           ) : (
-            <ViewerMenu post={post} setIsModalOpen={setIsModalOpen} />
+            <PostViewerMenu post={post} setIsModalOpen={setIsModalOpen} />
           )}
         </div>
 
@@ -143,12 +140,21 @@ const Posts = ({ post, setIsModalOpen, setIsEditModalOpen }) => {
           <div className="post-info">
             <div className="post-activity">
               {liked ? (
-                  <CiHeart className="postIcon likeIcon bg-danger" onClick={handleToggleLikes}/>
+                <CiHeart
+                  className="postIcon likeIcon bg-danger"
+                  onClick={handleToggleLikes}
+                />
               ) : (
-                  <CiHeart className="postIcon likeIcon" onClick={handleToggleLikes}/>
+                <CiHeart
+                  className="postIcon likeIcon"
+                  onClick={handleToggleLikes}
+                />
               )}
 
-              <RiChat1Line className="postIcon commentIcon"  onClick={handleToggleComments}/>
+              <RiChat1Line
+                className="postIcon commentIcon"
+                onClick={handleToggleComments}
+              />
               <CiLocationArrow1 className="postIcon shareIcon" />
               <CiSaveUp2 className="ms-auto postIcon saveIcon" />
             </div>
@@ -175,7 +181,29 @@ const Posts = ({ post, setIsModalOpen, setIsEditModalOpen }) => {
             {showAllComments ? (
               <>
                 {comments.map((comment, index) => {
-                  return <CommentSec comment={comment} index={index} />;
+                  return (
+                    <>
+                    <div className="d-flex">
+                      <CommentSec comment={comment} index={index} />
+                      {post?.username === userInfo?.user.username ? (
+                        <CmtOwnerMenu
+                          cmt={comment}
+                          post={post}
+                          getComments={getComments}
+                        />
+                      ) : comment?.userId == userInfo?.user._id ? (
+                        <CmtOwnerMenu
+                          cmt={comment}
+                          post={post}
+                          getComments={getComments}
+                        />
+                      ) : (
+                        <CmtViewerMenu cmt={comment} />
+                      )}
+
+                      </div>
+                    </>
+                  );
                 })}
               </>
             ) : (
@@ -188,7 +216,12 @@ const Posts = ({ post, setIsModalOpen, setIsEditModalOpen }) => {
           {showAllComments ? (
             <>
               <div className="addComment">
-                <input type="text" placeholder="Add a comment..." value={commentText} onChange={(e) => setCommentText(e.target.value)}/>
+                <input
+                  type="text"
+                  placeholder="Add a comment..."
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                />
                 <p onClick={handleCommentBtn}>Add</p>
               </div>
             </>

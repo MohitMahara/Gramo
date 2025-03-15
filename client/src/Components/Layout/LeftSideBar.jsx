@@ -72,7 +72,7 @@ const LeftSideBar = () => {
           </li>
 
           <li className="nav-item">
-            <NavLink className="nav-link" to="/profile">
+            <NavLink className="nav-link" to={`/${userInfo?.user.username}`}>
               {userInfo?.user.photoURL ? (
                 <>
                   <img

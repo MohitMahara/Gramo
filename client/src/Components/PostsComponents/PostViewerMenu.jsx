@@ -2,7 +2,7 @@ import React from "react";
 import { Dropdown, Menu, message } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
 
-const ViewerMenu = ({post, setIsModalOpen}) => {
+const PostViewerMenu = ({post, setIsModalOpen}) => {
   
   const items = [
      {key : 1, label : "Share"},
@@ -47,5 +47,5 @@ const ViewerMenu = ({post, setIsModalOpen}) => {
   );
 };
 
-export default ViewerMenu;
+export default PostViewerMenu;
 

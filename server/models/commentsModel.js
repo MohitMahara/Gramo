@@ -3,7 +3,7 @@ import userModel from "./userModel.js";
 
 const commentModel   = new mongoose.Schema({
     postId :{
-        type : String, 
+        type: String,  
         required : true
     },
 

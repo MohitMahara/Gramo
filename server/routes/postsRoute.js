@@ -7,7 +7,9 @@ import {
   likesController,
   getlikesController,
   getCommentsController,
-  addCommentController
+  addCommentController,
+  hasLikedController,
+  deleteCommentController
 } from "../controllers/postsController.js";
 
 const router = express.Router();
@@ -26,9 +28,13 @@ router.post("/:postId/:userId/like", likesController);
 
 router.get("/get-likes/:postId", getlikesController);
 
+router.get('/has-liked/:postId/:userId', hasLikedController);
+
 router.get("/get-comments/:postId", getCommentsController);
 
 router.post("/add-comment/:postId/:userId", addCommentController);
+
+router.delete('/delete-comment/:postId/:cmtId', deleteCommentController);
 
 
 

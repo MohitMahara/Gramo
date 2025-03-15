@@ -5,7 +5,7 @@ import { UsePosts } from "./PostContext";
 import { UseFirebase } from "../../Contexts/firebase";
 import axios from "axios";
 
-const OwnerMenu = ({post, setIsModalOpen, setIsEditModalOpen}) => {
+const PostOwnerMenu = ({post, setIsModalOpen, setIsEditModalOpen}) => {
   
   const { posts, setPosts } = UsePosts();
   const {userInfo} = UseFirebase();
@@ -78,4 +78,4 @@ const OwnerMenu = ({post, setIsModalOpen, setIsEditModalOpen}) => {
   );
 };
 
-export default OwnerMenu;
+export default PostOwnerMenu;
