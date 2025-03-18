@@ -32,6 +32,13 @@ npm start    # Run the frontend server
 ```
 
 ## ⚙️ Environment Variables
+
+Create a `.env` file in the root of the `client` directory and add:
+```
+REACT_APP_API=your-server-url (eg: http://localhost:8000)
+
+```
+
 Create a `.env` file in the root of the `server` directory and add:
 ```
 MONGO_URI=your-mongodb-url
