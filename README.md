@@ -1,4 +1,4 @@
-Gramo - Project Documentation
+#Gramo - Project Documentation
 
 📌 Project Overview
 
