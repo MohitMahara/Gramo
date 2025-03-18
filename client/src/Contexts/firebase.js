@@ -7,7 +7,7 @@ const provider = new GoogleAuthProvider();
 // Firebase Initialization
 
 const firebaseConfig = {
-  apiKey: `${process.env.REACT_APP_FIREBASE_API}`,
+  apiKey: "AIzaSyCY9RHLCoIMLshXmvsbs4QkNYG08zlhCTM",
   authDomain: "gramo-2a37a.firebaseapp.com",
   projectId: "gramo-2a37a",
   storageBucket: "gramo-2a37a.appspot.com",
