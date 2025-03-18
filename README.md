@@ -46,7 +46,7 @@ JWT_SECRET=your-secret-key
 PORT=5000
 ```
 ## Running the Project
-- Start the backend: npm start (in /server folder)
+- Start the backend: npm run server (in /server folder)
 - Start the frontend: npm start (in /client folder)
 - Open http://localhost:3000 in your browser
 
