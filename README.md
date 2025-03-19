@@ -13,7 +13,7 @@ Gramo is a social media platform where users connect, share moments, and engage 
 
 ### 1️⃣ Clone the Repository
 ```sh
-git clone https://github.com/your-username/Gramo.git
+git clone https://github.com/MohitMahara/Gramo.git
 cd Gramo
 ```
 
@@ -21,7 +21,7 @@ cd Gramo
 ```sh
 cd server
 npm install  # Install dependencies
-npm start    # Run the backend server
+npm run server    # Run the backend server
 ```
 
 ### 3️⃣ Frontend Setup
