@@ -3,9 +3,16 @@ import userModel from "../models/userModel.js";
 import { comparePassword, hashPassword } from "../helper/hashPassword.js";
 
 
-export const registerController = async(req, res) =>{
+export const registerController = async(req, res, next) =>{
     try {
         const {name , email, username, password} = req.body;
+
+        if(!name || !email || !username || !password){
+            return res.status(404).send({
+                success : false,
+                msg : "All fields are required"
+            })
+        }
 
         const isUsernameExists = await userModel.findOne({username});
 
@@ -40,33 +47,38 @@ export const registerController = async(req, res) =>{
         res.status(200).send({
             msg : "User created successfully",
             success : true,
-            user
         })
         
     } catch (error) {
-        console.log(error);
-        res.status(500).send({
-            msg : "Error while adding the user in db",
-            success : false,
-            error
-        }
-        )
+        next(error);
     }
 }
 
 
-
-
-export const loginController = async(req, res) => {
+export const loginController = async(req, res, next) => {
   try {
       
-    const {email, password} = req.body;
-    const user = await userModel.findOne({email});
+    const {email, password, username} = req.body;
+
+    if(!password || !email && !username){
+        return res.status(404).send({
+            success : false,
+            msg : "Email/Username and Password are required fields"
+        })
+    }
+
+    let user;
+
+    if(username){
+     user = await userModel.findOne({username});
+    }else{
+     user = await userModel.findOne({email});
+    }
 
     if(!user){
         return res.status(400).send({
             success : false,
-            msg : "Incorrect Email",
+            msg : "Incorrect Email/Username",
         })
     }
 
@@ -81,166 +93,53 @@ export const loginController = async(req, res) => {
 
     const token = jwt.sign({ _id: user._id },  process.env.JWT_SECRET,  { expiresIn: "1h" } );
 
+    const resUser = {
+        _id : user._id,
+        name : user.name,
+        username : user.username,
+        email : user.email,
+        photoURL : user.photoURL,
+    }
+
     return res.status(200).send({
         success : true,
         msg : "Login Successfully",
-        user,
+        user : resUser,
         token
     })
 
   } catch (error) {
-     console.log(error);
-     res.status(500).send({
-        success : false,
-        msg : "Error while login",
-        error
-     })
+     next(error);
   }
-
 }
 
 
-
-export const usernameExistsController = async(req, res) =>{
+export const getUserProfileController = async(req, res, next) =>{
     try {
-        const {username} = req.body;
+        const {username} = req.params;
 
-        const user = await userModel.findOne({username});
+        if(!username){
+          return res.status(404).send({
+            success : false,
+            msg : "Username is required"
+          })
+        }
 
+        const user = await userModel.findOne({username}).select("-password -googleId -authProvider -createdAt -updatedAt -__v");
+       
         if(!user){
-            return res.status(404).send({
-                msg : "No user found",
-                success : false
-            })
+          return res.status(404).send({
+            success : false,
+            msg : "User not found"
+          })
         }
 
         return res.status(200).send({
-            msg : "User found",
-            success : true
-        })
+          success : true,
+          user
+        });
 
     } catch (error) {
-        console.log(error);
-        res.status(500).send({
-            msg : "Error while checking username existance",
-            error
-        })
-    }
-}
-
-
-
-
-export const signUpWithGoogleController = async(req, res) =>{
-    try {
-       
-      const {userData} = req.body;
-
-
-       const name  = userData.name
-       const email  =  userData.email
-       const photo  = userData.photo
-       const username  = userData.username
-       const googleId =  userData.uid
-
-       const isExists = await userModel.findOne({email});
-       
-       if(!isExists){
-          const user = await new userModel({
-              name : name,
-              email: email,
-              photoURL : photo,
-              password : null,
-              username : username,
-              googleId : googleId,
-              authProvider : "google"
-
-          }).save();
-
-          return res.status(200).send({
-            msg : "User Registered Successfully",
-            success : true,
-            user
-           })
-
-       }
-
-       return res.status(200).send({
-        msg : "User Registered Successfully",
-        success : true,
-        isExists
-       })
-        
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send({
-            msg : "Internal Server Error",
-            success : false,
-        })
-    }
-}
-
-
-
-
-export const getUserController = async(req, res) =>{
-    try {
-        const username = req.params.username;
-        const user =  await userModel.findOne({username});
-
-
-        if(!user){
-            return res.status(404).send({
-                success : false,
-                msg : "User not found"
-            })
-        }
-
-        res.status(200).send({
-            success : true,
-            msg : "user found",
-            user
-        })
-        
-    } catch (error) {
-        console.log(error);
-        res.status(500).send({
-            success : false,
-            msg : "Error while retreving user information",
-            error
-        })
-    }
-}
-
-
-
-
-export const updateProfileController = async(req, res) =>{
-    try {
-        const uid = req.params.uid;
-        const {name , username, imgPath} = req.body;
-
-        
-        const user = await userModel.findOneAndUpdate(
-            { _id : uid},
-            {name : name, username : username, photoURL : imgPath},
-            { new: true }
-        );
-
-        user.save();
-        
-        res.status(200).send({
-            msg : "Profile Updated Successfully",
-            success : true,
-            user
-        })
-
-    } catch (error) {
-        console.log(error);
-        res.status(500).send({
-            success : false,
-            msg :  "Error while updating user profile",
-            error
-        })
+        next(error);
     }
 }

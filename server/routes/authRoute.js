@@ -1,14 +1,10 @@
 import express from "express";
 import {
   registerController,
-  getUserController,
-  updateProfileController,
   loginController,
-  usernameExistsController,
-  signUpWithGoogleController
+  getUserProfileController
 } from "../controllers/authController.js";
 
-import { requireSignIn } from "../middlewares/authMiddlewares.js";
 
 const router = express.Router();
 
@@ -16,12 +12,7 @@ router.post("/register", registerController);
 
 router.post("/login", loginController);
 
-router.post("/username-exists", usernameExistsController);
+router.get("/user/:username", getUserProfileController);
 
-router.get("/get-user/:username", getUserController);
-
-router.post("/register-google", signUpWithGoogleController);
-
-router.put("/update-profile/:uid", updateProfileController);
 
 export default router;

@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
 import authRoutes  from "./routes/authRoute.js";
 import postsRoutes from "./routes/postsRoute.js";
+import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 
 const app = express();
 dotenv.config();
@@ -28,6 +29,8 @@ app.use('/api/posts', postsRoutes);
 app.get("/", (req, res) =>{
   res.send("<h1>Welcome to the server</h1>")
 })
+
+app.use(errorMiddleware);
 
 app.listen(PORT , () =>{
     console.log(`server listening at port ${PORT}`)

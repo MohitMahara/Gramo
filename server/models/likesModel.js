@@ -1,15 +1,15 @@
 import mongoose from "mongoose";
-import userModel from "./userModel.js";
 
 const likesModel = new mongoose.Schema({
   postId : {
-    type : String,
+    type : mongoose.Schema.Types.ObjectId,
+    ref : "posts",
     required : true
   },
   
   userId : {
     type : mongoose.Schema.Types.ObjectId,
-    ref : userModel, 
+    ref : "users", 
     required : true
   }
 }, {timestamps : true});
