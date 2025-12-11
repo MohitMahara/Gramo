@@ -1,4 +1,5 @@
 import express from "express";
+import multer from "multer";
 import {
   createPostsController,
   getPostController,
@@ -14,7 +15,13 @@ import {
 
 const router = express.Router();
 
-router.post("/create-post/:username", createPostsController);
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+});
+
+
+router.post("/create-post", upload.array("media"), createPostsController);
 
 router.get("/get-posts/:username", getPostController);
 

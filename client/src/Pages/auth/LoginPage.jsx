@@ -1,174 +1,89 @@
-import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
-import { FaGoogle } from "react-icons/fa";
-import { UseFirebase } from "../../Contexts/firebase";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { v4 as uuidv4 } from "uuid";
-import { toast} from "react-toastify";
-import AuthHeader from "./authHeader";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AuthHeader } from './AuthHeader';
+import toast from 'react-hot-toast';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
+import { UseAuth } from '../../context/AuthContext';
 
-const LoginPage = () => {
-  const { userInfo, setUserInfo, signInGoogle} = UseFirebase();
+export default function LoginPage() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
-  
-  const handleSubmit = async (e) => {
+  const {userInfo, setUserInfo} = UseAuth();
+
+
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    try {
+    try{
 
-      const res = await axios.post(`${process.env.REACT_APP_API}/api/auth/login`, {
-          email, password
-      });
+      if (!email || !password) {
+        toast.error('Please fill in all fields');
+        return;
+       }
 
-
-      if(res.data.success){
-        toast.success("Login Successfully");
-     
+       const res = await axios.post(`${import.meta.env.VITE_SERVER_API}/api/v1/auth/login`, {email, password});
+       
+       if(res.data.success){
+        toast.success(res.data.msg);
         setUserInfo({
           ...userInfo,
           user: res.data.user,
-          token: res.data.token,
+          token: res.data.token
         });
-
-        localStorage.setItem("gramo", JSON.stringify(res.data));
-
+        localStorage.setItem("gramo-auth", JSON.stringify(res.data));
         navigate("/");
-      }
+       }
 
-    } catch (error) {
-      const {msg} = error.response.data;
-      toast.error(msg);
-    }
-  };
-
-  function generateUsername(Name) {
-    let newName = Name.replace(/ /g, "_");
-    const uniqueId = uuidv4().slice(0, 8);
-    return `${newName}_${uniqueId}`;
-  }
-
-
-  const loginwithGoogle = async (e) => {
-    e.preventDefault();
-    try {
-
-      const snapshot = await signInGoogle();
-      const data = snapshot?.user;
-      const username = generateUsername(data.displayName);
-      const token = snapshot?._tokenResponse.idToken;
-
-      const userData = {
-          name : data.displayName,
-          email : data.email,
-          photoURL : data.photoURL,
-          username : username,
-          googleId : data.uid
-      }
-
-       
-      const res = await axios.post(
-        `${process.env.REACT_APP_API}/api/auth/register-google`,{
-          userData,
-        }
-      );
-
-      if(res.data.success){
-
-        const user = res.data?.isExists || res.data?.user;
-
-        setUserInfo({
-          ...userInfo,
-          user: user,
-          token: token,
-        });
-  
-        localStorage.setItem("gramo", JSON.stringify({user, token}));
-
-        navigate("/");
-      }
-
-
-
-    } catch (error) {
-      console.log(error);
+    }catch(error){
+        toast.error(error.message);
     }
   };
 
   return (
     <>
-      <div className="container-fluid login-container">
-        <AuthHeader/>
-        <div className="formContainer">
-          <form className="loginForm">
-            <div className="login-header">
-              <h1>Hi there !</h1>
-              <p>Welcome to gramo.</p>
-            </div>
+    <AuthHeader/>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-white p-8 rounded shadow max-w-sm w-full">
+        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Login</h2>
 
-            <div className="form-group">
-              <input
-                type="email"
-                className="form-control"
-                id="email"
-                placeholder="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
-              />
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="you@example.com"
+            />
+          </div>
 
-            <div className="form-group">
-              <input
-                type="password"
-                className="form-control"
-                id="password"
-                placeholder="password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
-              />
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <input
+              type="password"
+              name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="********"
+            />
+          </div>
 
-            <div className="form-group">
-              <button
-                type="submit"
-                className="btn submitbtn"
-                onClick={handleSubmit}
-              >
-                Submit
-              </button>
-            </div>
+          <div className="">
+            <Link to="/register" className="text-sm text-blue-600 hover:underline">Don't have an account? Register</Link>
+          </div>
 
-            <p>OR</p>
-
-            <div className="form-group">
-              <button
-                type="submit"
-                className="btn submitbtn googlebtn"
-                onClick={loginwithGoogle}
-              >
-                <FaGoogle className="me-2" />
-                Log in with Google
-              </button>
-            </div>
-
-            <div className="form-group signUpCheck">
-              <p>
-                Don't have an account ?{" "}
-                <NavLink className="link" to={"/register"}>
-                  SignUp
-                </NavLink>
-              </p>
-            </div>
-          </form>
-        </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
+            Login
+          </button>
+        </form>
       </div>
+    </div>
     </>
   );
-};
-
-export default LoginPage;
+}

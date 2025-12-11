@@ -1,21 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { Navigate, Outlet } from "react-router-dom";
-import { UseFirebase } from "../../Contexts/firebase";
+import { Navigate } from 'react-router-dom';
+import { UseAuth } from '../../context/AuthContext';
 
-const ProtectedRoutes = () => {
-  const { userInfo } = UseFirebase();
-  const [loading, setLoading] = useState(true);
+export default function ProtectedRoute({ children }) {
+    const { userInfo } = UseAuth();
+    const user = userInfo?.user;
 
-  useEffect(() => {
-      setLoading(false);
-
-  }, [userInfo]);
-
-  if (loading) {
-    return <div>Loading...</div>;
+  if (!user) {
+    return <Navigate to="/login" replace />;
   }
 
-  return userInfo?.token ? <Outlet /> : <Navigate to="/register" />;
-};
-
-export default ProtectedRoutes;
+  return children;
+}

@@ -21,8 +21,8 @@ app.use(express.json());
 
 // routes
 
-app.use('/api/auth',authRoutes);
-app.use('/api/posts', postsRoutes);
+app.use('/api/v1/auth',authRoutes);
+app.use('/api/v1/posts', postsRoutes);
 
 
 

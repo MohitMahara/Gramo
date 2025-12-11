@@ -1,310 +1,307 @@
 import commentsModel from "../models/commentsModel.js";
 import likesModel from "../models/likesModel.js";
 import postModel from "../models/postModel.js";
+import uploadToCloudinary from "../helper/cloudinaryUploader.js";
 
-export const createPostsController = async(req, res) => {
-    try {
-
-        const username = req.params.username;
-        const {filePath, caption } = req.body;
-
-        if(!filePath && !caption){
-            return res.status(400).send({
-                msg : "Post is empty.",
-                success : false
-            })
-        }
-
-        const post =  await new postModel({
-           username : username,
-           fileURL : filePath,
-           caption : caption
-        }).save();
-
-
-        return res.status(200).send({
-            msg : "Post created Successfully",
-            success : true,
-            post
-        })
-
-    } catch (error) {
-        return res.status(500).send({
-            msg : "Internal server error",
-            success : false,
-            error
-        })
-    }
-}
-
-
-
-
-export const getPostController = async(req, res) =>{
+export const createPostsController = async (req, res, next) => {
   try {
-     const username = req.params.username;
-
-    const posts = await postModel.find({username});
+    const { caption, userId } = req.body;
+    const files = req.files;
     
+    if(!userId){
+        return  res.status(400).send({
+            msg : "No user found",
+            success : false
+        });
+    }
+
+    if(files.length === 0 && !caption){
+        return res.status(400).send({
+            msg : "Post cannot be empty",
+            success : false
+        });
+    }
+
+    let uploadedMedia = [];
+
+    if (files && files.length > 0) {
+      for (const file of files) {
+        const uploaded = await uploadToCloudinary(file.buffer, "Gramo/posts");
+
+        uploadedMedia.push({
+          url: uploaded.secure_url,
+          public_id: uploaded.public_id,
+          fileType: uploaded.resource_type,
+        });
+      }
+    }
+
+    const post = await new postModel({
+      userId,
+      caption,
+      media : uploadedMedia,
+      postType: uploadedMedia.length === 0 ? "text" : uploadedMedia[0].fileType,
+    }).save();
 
     return res.status(200).send({
-        msg : "User posts",
-        success : true,
-        posts
-    })
-
+      msg: "Post created Successfully",
+      success: true,
+    });
 
   } catch (error) {
-    return res.status(500).send({
-        msg : "Internal Server Error",
-        success : false,
-        error
-    })
+     next(error);
   }
-}
+};
 
 
 
+export const getPostController = async (req, res) => {
+  try {
+    const username = req.params.username;
 
-export const deletePostController = async(req, res) =>{
-    try {
-        const pid = req.params.pid;
-        
-        const Post = await postModel.findById(pid);
+    const posts = await postModel.find({ username });
 
-        if(!Post){
-            return res.status(404).send({
-                msg : "Post not Found",
-                success : false,
-            })
-        }
+    return res.status(200).send({
+      msg: "User posts",
+      success: true,
+      posts,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      msg: "Internal Server Error",
+      success: false,
+      error,
+    });
+  }
+};
 
-        await postModel.findByIdAndDelete(pid);
+export const deletePostController = async (req, res) => {
+  try {
+    const pid = req.params.pid;
 
-        await likesModel.deleteMany({postId : pid});
+    const Post = await postModel.findById(pid);
 
-        await commentsModel.deleteMany({postId: pid});
-
-
-        return res.status(200).send({
-            msg : "Post deleted successfully",
-            success : true
-        })
-
-    } catch (error) {
-        res.status(500).send({
-            msg : "Error while deleting Post",
-            success : false, 
-            error
-        })
+    if (!Post) {
+      return res.status(404).send({
+        msg: "Post not Found",
+        success: false,
+      });
     }
-}
 
+    await postModel.findByIdAndDelete(pid);
 
-export const updatePostController = async(req, res) =>{
-   try {
-     const pid = req.params.pid;
-     const {caption} = req.body;
+    await likesModel.deleteMany({ postId: pid });
 
-     const updatedPost = await postModel.findByIdAndUpdate(pid, {caption}, {new : true});
+    await commentsModel.deleteMany({ postId: pid });
 
-     if(!updatedPost){
-         return res.status(404).send({
-             msg : "Post not Found",
-             success : false,
-         })
-     }
-
-     
-     return res.status(200).send({
-         msg : "Post Updated successfully",
-         success : true
-     })
-
-   } catch (error) {
+    return res.status(200).send({
+      msg: "Post deleted successfully",
+      success: true,
+    });
+  } catch (error) {
     res.status(500).send({
-        msg : "Error while updating Post",
-        success : false, 
-        error
-    })
-   }
-}
+      msg: "Error while deleting Post",
+      success: false,
+      error,
+    });
+  }
+};
 
+export const updatePostController = async (req, res) => {
+  try {
+    const pid = req.params.pid;
+    const { caption } = req.body;
 
-export const likesController = async (req, res) =>{
-     try {
-        const userId = req.params.userId;
-        const postId = req.params.postId;
+    const updatedPost = await postModel.findByIdAndUpdate(
+      pid,
+      { caption },
+      { new: true }
+    );
 
-        const likeExist = await likesModel.findOne({userId : userId, postId : postId});
-
-        if(likeExist){
-          await likesModel.deleteOne({userId : userId, postId : postId});
-          return res.status(200).send({
-             success : true,
-             liked : false,
-             msg : "unliked the post successfully"
-          })
-        }
-        else{
-           const like = new likesModel({
-              userId, 
-              postId
-           }).save();
-
-           return res.status(200).send({
-            success : true,
-            liked : true,
-            msg : "Liked the post successfully"
-           })
-        }
-
-     } catch (error) {
-        res.status(500).send({
-          msg : "Internal server error",
-          success : false,
-          error
-        })
-     }
-}
-
-
-
-export const getlikesController = async (req, res) =>{
-    try {
-        const postId = req.params.postId;
-        
-        const likes = await likesModel.find({postId : postId});
-
-        return res.status(200).send({
-          success : true,
-          msg : "Liked By",
-          likes
-        })
-
-    } catch (error) {
-        res.status(500).send({
-            success : false, 
-            msg : "Error while getting likes",
-            error
-        })
+    if (!updatedPost) {
+      return res.status(404).send({
+        msg: "Post not Found",
+        success: false,
+      });
     }
-}
 
+    return res.status(200).send({
+      msg: "Post Updated successfully",
+      success: true,
+    });
+  } catch (error) {
+    res.status(500).send({
+      msg: "Error while updating Post",
+      success: false,
+      error,
+    });
+  }
+};
 
+export const likesController = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const postId = req.params.postId;
 
+    const likeExist = await likesModel.findOne({
+      userId: userId,
+      postId: postId,
+    });
 
-export const hasLikedController = async (req, res) =>{
-    try {
-        const postId = req.params.postId;
-        const userId = req.params.userId;
-
-        const status =  await likesModel.findOne({postId : postId, userId : userId});
-
-        if(status){
-            return res.status(200).send({
-                msg : "user has liked the post",
-                success : true,
-                liked : true
-            })
-        }
-
-        return res.status(200).send({
-            msg : "user has  not liked the post",
-            success : true,
-            liked : false
-        })
-
-    } catch (error) {
-        return res.status(500).send({
-            msg : "Error while checking like status",
-            success : false,
-            error
-        })
-    }
-}
-
-
-
-
-export const getCommentsController = async (req, res) =>{
-    try {
-        const postId = req.params.postId;
-        
-        const comments = await commentsModel.find({postId : postId}).populate("userId", "username photoURL");
-
-        return res.status(200).send({
-          success : true,
-          msg : "all comments",
-          comments
-        })
-
-    } catch (error) {
-        res.status(500).send({
-            success : false, 
-            msg : "Error while getting comments",
-            error
-        })
-    }
-}
-
-
-
-export const addCommentController = async(req, res) =>{
-    try {
-        const postId = req.params.postId;
-        const userId = req.params.userId;
-        const {commentText} = req.body;
-
-        if(!commentText) return res.status(300).send({success : false, msg : "Comment can not be blanked"});
-
-        const comment = new commentsModel({
-            postId, 
-            userId, 
-            cmtText : commentText
-        }).save();
-        
-        return res.status(200).send({
-            msg : "Comment added Successfully",
-            success : true, 
-        })
-
-    } catch (error) {
-        return res.status(500).send({
-            msg : "Error while adding comment",
-            success : false,
-            error
-        })
-    }
-}
-
-
-export const deleteCommentController = async (req, res) => {
-   try {
-      const postId = req.params.postId;
-      const cmtId = req.params.cmtId;
-
-      const comment = await commentsModel.findOne({postId : postId, _id : cmtId});
-
-      if(!comment){
-          return res.status(404).send({
-            msg : "Comment not found",
-            success : false,
-          })
-      }
-
-      await commentsModel.deleteOne({postId : postId, _id : cmtId});
+    if (likeExist) {
+      await likesModel.deleteOne({ userId: userId, postId: postId });
+      return res.status(200).send({
+        success: true,
+        liked: false,
+        msg: "unliked the post successfully",
+      });
+    } else {
+      const like = new likesModel({
+        userId,
+        postId,
+      }).save();
 
       return res.status(200).send({
-        msg : "comment deleted successfully",
-        success : true
-      })
+        success: true,
+        liked: true,
+        msg: "Liked the post successfully",
+      });
+    }
+  } catch (error) {
+    res.status(500).send({
+      msg: "Internal server error",
+      success: false,
+      error,
+    });
+  }
+};
 
-   } catch (error) {
-      return res.status(500).send({
-        msg : "Error while deleting comment",
-        success : false,
-        error
-      })
-   }
-}
+export const getlikesController = async (req, res) => {
+  try {
+    const postId = req.params.postId;
+
+    const likes = await likesModel.find({ postId: postId });
+
+    return res.status(200).send({
+      success: true,
+      msg: "Liked By",
+      likes,
+    });
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      msg: "Error while getting likes",
+      error,
+    });
+  }
+};
+
+export const hasLikedController = async (req, res) => {
+  try {
+    const postId = req.params.postId;
+    const userId = req.params.userId;
+
+    const status = await likesModel.findOne({ postId: postId, userId: userId });
+
+    if (status) {
+      return res.status(200).send({
+        msg: "user has liked the post",
+        success: true,
+        liked: true,
+      });
+    }
+
+    return res.status(200).send({
+      msg: "user has  not liked the post",
+      success: true,
+      liked: false,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      msg: "Error while checking like status",
+      success: false,
+      error,
+    });
+  }
+};
+
+export const getCommentsController = async (req, res) => {
+  try {
+    const postId = req.params.postId;
+
+    const comments = await commentsModel
+      .find({ postId: postId })
+      .populate("userId", "username photoURL");
+
+    return res.status(200).send({
+      success: true,
+      msg: "all comments",
+      comments,
+    });
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      msg: "Error while getting comments",
+      error,
+    });
+  }
+};
+
+export const addCommentController = async (req, res) => {
+  try {
+    const postId = req.params.postId;
+    const userId = req.params.userId;
+    const { commentText } = req.body;
+
+    if (!commentText)
+      return res
+        .status(300)
+        .send({ success: false, msg: "Comment can not be blanked" });
+
+    const comment = new commentsModel({
+      postId,
+      userId,
+      cmtText: commentText,
+    }).save();
+
+    return res.status(200).send({
+      msg: "Comment added Successfully",
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      msg: "Error while adding comment",
+      success: false,
+      error,
+    });
+  }
+};
+
+export const deleteCommentController = async (req, res) => {
+  try {
+    const postId = req.params.postId;
+    const cmtId = req.params.cmtId;
+
+    const comment = await commentsModel.findOne({ postId: postId, _id: cmtId });
+
+    if (!comment) {
+      return res.status(404).send({
+        msg: "Comment not found",
+        success: false,
+      });
+    }
+
+    await commentsModel.deleteOne({ postId: postId, _id: cmtId });
+
+    return res.status(200).send({
+      msg: "comment deleted successfully",
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      msg: "Error while deleting comment",
+      success: false,
+      error,
+    });
+  }
+};

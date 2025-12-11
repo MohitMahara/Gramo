@@ -1,28 +1,14 @@
-import React from "react";
-import RightSideBar from "./RightSideBar";
-import LeftSideBar from "./LeftSideBar";
-import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer } from "react-toastify";
+import { Header } from "./Header";
+import { Footer } from "./Footer";
 
-
-const Layout = ({ children }) => {
-  return (
+export const Layout = ({children}) =>{
+   return(
     <>
-      <div className="d-flex">
-        <LeftSideBar />
-        <main style={{ minHeight: "100vh", minWidth: "45vw" }}>
-          <ToastContainer
-            position="top-center"
-            autoClose={2000}
-            draggable
-            pauseOnHover
-            theme="light"/>
-          {children}
-        </main>
-        <RightSideBar />
-      </div>
+      <Header/>
+      <main className="min-h-dvh md:min-h-screen">
+        {children}
+      </main>
+      <Footer/>
     </>
-  );
-};
-
-export default Layout;
+   )
+}
