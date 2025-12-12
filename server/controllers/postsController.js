@@ -55,23 +55,18 @@ export const createPostsController = async (req, res, next) => {
 
 
 
-export const getPostController = async (req, res) => {
+export const getPostController = async (req, res, next) => {
   try {
-    const username = req.params.username;
 
-    const posts = await postModel.find({ username });
+    const posts = await postModel.find().populate("userId", "name username photoURL").sort({createdAt : -1});
 
     return res.status(200).send({
-      msg: "User posts",
+      msg: "Posts fetched successfully.",
       success: true,
       posts,
     });
   } catch (error) {
-    return res.status(500).send({
-      msg: "Internal Server Error",
-      success: false,
-      error,
-    });
+    next(error)
   }
 };
 

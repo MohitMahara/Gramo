@@ -12,7 +12,7 @@ export default function Feed() {
 
   const getPosts = async() => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_SERVER_API}/api/v1/posts/getPosts`);
+      const res = await axios.get(`${import.meta.env.VITE_SERVER_API}/api/v1/posts/get-posts`);
       if (res.data.success) {
         setPosts(res.data.posts);
       }
@@ -31,7 +31,7 @@ export default function Feed() {
     <div className="space-y-4">
       <NewPost getPosts={getPosts}/>
       {posts?.map((post) => (
-        <PostCard key={post?.id} post={post} />
+        <PostCard key={post?._id} post={post} />
       ))}
     </div>
   );

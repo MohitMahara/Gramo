@@ -23,7 +23,7 @@ const upload = multer({
 
 router.post("/create-post", upload.array("media"), createPostsController);
 
-router.get("/get-posts/:username", getPostController);
+router.get("/get-posts", getPostController);
 
 router.delete("/delete-post/:pid", deletePostController);
 
