@@ -4,17 +4,18 @@ import { Link } from "react-router-dom";
 import {Bookmark, Heart, MessageCircle} from "lucide-react";
 import toast from "react-hot-toast";
 import axios  from "axios";
+import { UseAuth } from "../../context/AuthContext";
 
 
 export default function PostCard({ post }) {
-
+ const {userInfo} = UseAuth();
  const [isLiked, setIsLiked] = useState(false);
  const [isSaved, setIsSaved] = useState(false);
-
+ const [isFollowing, setIsFollowing] = useState(false);
+ const uid = userInfo?.user?._id;
 
  const handleLike = async() => {
    try {
-      const res = await axios.post(`${import.meta.env.VITE_SERVER_API}/api/v1/posts/${post._id}/<USER_ID>/like`);
       if (res.data.success) {
         toast.success(res.data.msg);
         setIsLiked(res.data.liked);
@@ -35,7 +36,6 @@ export default function PostCard({ post }) {
 
  const handleSave = async() => {
    try {
-      const res = await axios.post(`${import.meta.env.VITE_SERVER_API}/api/v1/posts/${post._id}/<USER_ID>/like`);
       if (res.data.success) {
         toast.success(res.data.msg);
         setIsLiked(res.data.liked);
@@ -48,10 +48,28 @@ export default function PostCard({ post }) {
 
  const handleFollow = async() => {
     try {
+
+      const followerId = uid;
+      const followingId = post?.userId?._id;
+
+      if(!followerId){
+        return toast.error("Please login to follow users");
+      }
+
+      if(!followerId){
+        return toast.error("Invalid User");
+      }
+
+      const res = await axios.post(`${import.meta.env.VITE_SERVER_API}/api/v1/auth/user/follow`, { followerId, followingId });
+     
+      if (res.data.success) {
+        toast.success(res.data.msg);
+        setIsFollowing(res.data.following);
+      }
+
     }catch(error){
-
+      toast.error(error.message);
     }
-
   }
 
   return (
@@ -76,9 +94,11 @@ export default function PostCard({ post }) {
           </span>
         </div>
       </div>
-      <div className="mb-3">
-         <button className="text-blue-600 text-md cursor-pointer" onClick={handleFollow}>Follow</button>
-      </div>
+        {uid !== post?.userId?._id &&
+         <div className="mb-3">
+             <button className="text-blue-600 text-md cursor-pointer" onClick={handleFollow}>{isFollowing ? "Following" : "Follow"}</button>
+          </div>
+        }
       </div>
 
       {post?.media && post?.media?.length > 0 && (

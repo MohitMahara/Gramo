@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import userModel from "../models/userModel.js";
 import { comparePassword, hashPassword } from "../helper/hashPassword.js";
+import followModel from "../models/followModel.js";
 
 
 export const registerController = async(req, res, next) =>{
@@ -137,6 +138,51 @@ export const getUserProfileController = async(req, res, next) =>{
         return res.status(200).send({
           success : true,
           user
+        });
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+export const followController = async(req, res, next) => {
+    try {
+        
+        const { followerId, followingId } = req.body;
+
+        if (!followerId || !followingId) {
+            return res.status(400).send({
+                success: false,
+                msg: "Both followerId and followingId are required."
+            });
+        }
+
+        if (followerId === followingId) {
+            return res.status(400).send({
+                success: false,
+                msg: "You cannot follow yourself."
+            });
+        }
+        
+        const existingFollow = await followModel.findOne({ followerId, followingId });
+
+        if (existingFollow) {
+            await followModel.deleteOne({ _id: existingFollow._id });
+            return res.status(200).send({
+                success: true,
+                msg: "Unfollowed successfully.",
+                following: false
+            });
+        }
+
+        const newFollow = new followModel({ followerId, followingId });
+        await newFollow.save();
+
+        return res.status(200).send({
+            success: true,
+            msg: "Followed successfully.",
+            following: true
         });
 
     } catch (error) {

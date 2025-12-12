@@ -2,7 +2,8 @@ import express from "express";
 import {
   registerController,
   loginController,
-  getUserProfileController
+  getUserProfileController,
+  followController
 } from "../controllers/authController.js";
 
 
@@ -13,6 +14,8 @@ router.post("/register", registerController);
 router.post("/login", loginController);
 
 router.get("/user/:username", getUserProfileController);
+
+router.post("/user/follow", followController);
 
 
 export default router;
