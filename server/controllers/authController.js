@@ -189,3 +189,48 @@ export const followController = async(req, res, next) => {
         next(error);
     }
 }
+
+
+
+export const getFollowersCountController = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).send({
+        success: false,
+        msg: "UserId is required.",
+      });
+    }
+
+    const followersCount = await followModel.countDocuments({ followingId: userId });
+
+    return res.status(200).send({
+      success: true,
+      count: followersCount,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getFollowingCountController = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).send({
+        success: false,
+        msg: "UserId is required.",
+      });
+    }
+
+    const followingCount = await followModel.countDocuments({ followerId: userId });
+    return res.status(200).send({
+      success: true,
+      count: followingCount,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { Layout } from "../components/Layout/Layout";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import ProfilePostCard from "../components/Card/ProfilePostCard";
 
 export default function ProfilePage() {
   const {username} = useParams();
@@ -13,9 +14,9 @@ export default function ProfilePage() {
 
   const getPosts = async () => {
     try {
-       const res = await axios.get(`${import.meta.env.VITE_SERVER_API}/api/v1/posts/userPosts/${uid}`);
+       const res = await axios.get(`${import.meta.env.VITE_SERVER_API}/api/v1/posts/get-posts/${username}`);
        if (res.data.success) {
-            setPostsData(res.data.userPosts);
+            setPostsData(res.data.posts);
         }
     } catch (error) {
       toast.error(error.message);
@@ -25,7 +26,7 @@ export default function ProfilePage() {
 
   const getUserInfo = async () => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_SERVER_API}/api/v1/auth/getUser/${uid}`);
+        const res = await axios.get(`${import.meta.env.VITE_SERVER_API}/api/v1/auth/user/${username}`);
         if (res.data.success) {
             setUser(res.data.user);
         }
@@ -44,11 +45,13 @@ export default function ProfilePage() {
     <Layout>
       <div className="bg-gray-100 min-h-screen w-full">
         <div className="p-6 max-w-5xl mx-auto space-y-6">
-          <UserInfoCard user={user} />
+          <UserInfoCard user={user} postsCount={postsData.length} />
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-800">Posts</h3>
             {postsData.length > 0 ? (
-              postsData.map((post) => <PostCard key={post._id} post={post} />)
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              { postsData.map((post) => <ProfilePostCard key={post._id} post={post} />)}
+              </div>
             ) : (
               <p className="text-sm text-gray-500">No posts yet.</p>
             )}

@@ -2,6 +2,7 @@ import commentsModel from "../models/commentsModel.js";
 import likesModel from "../models/likesModel.js";
 import postModel from "../models/postModel.js";
 import uploadToCloudinary from "../helper/cloudinaryUploader.js";
+import userModel from "../models/userModel.js";
 
 export const createPostsController = async (req, res, next) => {
   try {
@@ -59,6 +60,39 @@ export const getPostController = async (req, res, next) => {
   try {
 
     const posts = await postModel.find().populate("userId", "name username photoURL").sort({createdAt : -1});
+
+    return res.status(200).send({
+      msg: "Posts fetched successfully.",
+      success: true,
+      posts,
+    });
+  } catch (error) {
+    next(error)
+  }
+};
+
+export const getUserPostController = async (req, res, next) => {
+  try {
+
+    const {username} = req.params;
+
+    if(!username){
+        return res.status(400).send({
+            msg : "Username is required",
+            success : false
+        });
+    }
+
+    const user  = await userModel.findOne({username});
+
+    if(!user){
+        return res.status(404).send({
+            msg : "User not found",
+            success : false
+        });
+    }
+
+    const posts = await postModel.find({userId : user._id}).populate("userId", "name username photoURL").sort({createdAt : -1});
 
     return res.status(200).send({
       msg: "Posts fetched successfully.",

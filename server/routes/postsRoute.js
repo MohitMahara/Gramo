@@ -5,6 +5,7 @@ import {
   getPostController,
   deletePostController,
   updatePostController,
+  getUserPostController,
   likesController,
   getlikesController,
   getCommentsController,
@@ -24,6 +25,8 @@ const upload = multer({
 router.post("/create-post", upload.array("media"), createPostsController);
 
 router.get("/get-posts", getPostController);
+
+router.get("/get-posts/:username", getUserPostController);
 
 router.delete("/delete-post/:pid", deletePostController);
 

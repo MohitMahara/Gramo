@@ -52,7 +52,7 @@ export const Header = () => {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center py-4">
             <Link to="/" className="flex text-2xl font-bold content-center">
-              <p className="ps-2 text-yellow-600">Gramo</p>
+              <p className="ps-2 text-blue-600">Gramo</p>
             </Link>
             <ul className="hidden md:flex space-x-6">
               <li>

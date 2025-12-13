@@ -7,7 +7,7 @@ export default function ProfileSidebar() {
 
   return (
     <div className="bg-white shadow p-4 rounded">
-      <Link to={`/profile/${user?._id}`} className="text-center">
+      <Link to={`/profile/${user?.username}`} className="text-center">
         <div className="w-20 h-20 mx-auto bg-purple-500 rounded-full flex items-center justify-center text-white mb-4">
           <p className="text-2xl">{user?.name?.charAt(0)}</p>
         </div>

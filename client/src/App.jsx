@@ -15,7 +15,7 @@ function App() {
   <Toaster position="top-center" /> 
   <Routes>
     <Route path="/" element={<ProtectedRoute><HomePage/></ProtectedRoute>} />
-    <Route path="/profile/:uid" element={<ProtectedRoute><ProfilePage/></ProtectedRoute>} />
+    <Route path="/profile/:username" element={<ProtectedRoute><ProfilePage/></ProtectedRoute>} />
     <Route path="/messages" element={<ProtectedRoute><ChatPage/></ProtectedRoute>} />
     <Route path="/contactUs" element={<ProtectedRoute><ContactUsPage/></ProtectedRoute>} />
     <Route path="/login" element={<LoginPage/>} />
