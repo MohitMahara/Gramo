@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { FaYoutube } from "react-icons/fa";
 import { IoImageSharp } from "react-icons/io5";
+import Btn from "../Btn/Btn";
 
 export default function NewPost({ getPosts }) {
   const [media, setMedia] = useState([]);
@@ -119,18 +120,11 @@ export default function NewPost({ getPosts }) {
         {media.length > 0 && (
           <div className="mt-2 flex gap-2 flex-wrap">
             {media.map((file, idx) => (
-              <div
-                key={idx}
-                className="border rounded px-2 py-1 text-xs flex items-center gap-2"
-              >
+              <div key={idx} className="border rounded px-2 py-1 text-xs flex items-center gap-2">
                 <span className="font-medium">{file.name}</span>
-                <button
-                  type="button"
-                  onClick={() => handleRemoveFile(idx)}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  ×
-                </button>
+                <Btn variant="noBackground" onClick={() => handleRemoveFile(idx)} className={"text-red-500 hover:text-red-700 text-md"}>
+                    ×
+                </Btn>
               </div>
             ))}
           </div>
@@ -158,9 +152,9 @@ export default function NewPost({ getPosts }) {
             </div>
           </div>
 
-          <button type="submit" className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 cursor-pointer" >
+          <Btn type="submit" variant="secondary" className={"px-8 py-2"}>
             Post
-          </button>
+          </Btn>
         </div>
       </form>
     </div>
