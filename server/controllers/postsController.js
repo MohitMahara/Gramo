@@ -3,6 +3,7 @@ import likesModel from "../models/likesModel.js";
 import postModel from "../models/postModel.js";
 import uploadToCloudinary from "../helper/cloudinaryUploader.js";
 import userModel from "../models/userModel.js";
+import cloudinary from "../utils/cloudinary.js";
 
 export const createPostsController = async (req, res, next) => {
   try {
@@ -122,6 +123,8 @@ export const deletePostController = async (req, res) => {
     await likesModel.deleteMany({ postId: pid });
 
     await commentsModel.deleteMany({ postId: pid });
+
+    // await cloudinary.uploader.destroy(Post.);
 
     return res.status(200).send({
       msg: "Post deleted successfully",

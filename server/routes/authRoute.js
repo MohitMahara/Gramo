@@ -1,12 +1,20 @@
 import express from "express";
+import multer from "multer";
+
 import {
   registerController,
   loginController,
   getUserProfileController,
   followController,
   getFollowersCountController,
-  getFollowingCountController
+  getFollowingCountController,
+  editProfileController,
+  updateProfilePicController
 } from "../controllers/authController.js";
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+});
 
 
 const router = express.Router();
@@ -14,6 +22,10 @@ const router = express.Router();
 router.post("/register", registerController);
 
 router.post("/login", loginController);
+
+router.put("/user/:uid/editProfile", editProfileController);
+
+router.put("/user/:uid/changeProfilePic",upload.single("profile"), updateProfilePicController);
 
 router.get("/user/:username", getUserProfileController);
 

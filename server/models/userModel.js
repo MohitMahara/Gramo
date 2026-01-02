@@ -1,5 +1,17 @@
 import mongoose from "mongoose";
 
+const profileSchema = new mongoose.Schema({
+  url: { 
+    type: String,
+    required: true,
+  },
+
+  public_id: { 
+    type: String,
+    required: true,
+  },
+});
+
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -34,9 +46,7 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
 
-    photoURL: {
-      type: String,
-    },
+    photoURL: profileSchema
   },
   { timestamps: true }
 );
