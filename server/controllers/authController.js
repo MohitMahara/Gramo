@@ -290,9 +290,8 @@ export const editProfileController = async (req, res, next) => {
 export const updateProfilePicController = async(req, res, next) => {
    try {
      const uid = req.params.uid;
-     const file = req.files;
+     const file = req.file;
 
-     
      if(!uid){
         return res.status(400).send({
            msg : "user id is required",
@@ -331,10 +330,18 @@ export const updateProfilePicController = async(req, res, next) => {
       }
     }
 
+    const resUser = {
+      _id: usr._id,
+      name: usr.name,
+      username: usr.username,
+      email: usr.email,
+      photoURL: usr.photoURL,
+    };
+
     return res.status(200).send({
       msg : "Profile Picture updated successfully",
       success : true,
-      user : usr
+      user : resUser
     })
     
    } catch (error) {

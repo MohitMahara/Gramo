@@ -23,9 +23,9 @@ router.post("/register", registerController);
 
 router.post("/login", loginController);
 
-router.put("/user/:uid/editProfile", editProfileController);
+router.put("/user/:uid/profile/edit", editProfileController);
 
-router.put("/user/:uid/changeProfilePic",upload.single("profile"), updateProfilePicController);
+router.put("/user/:uid/profile/update-image",upload.single("profile"), updateProfilePicController);
 
 router.get("/user/:username", getUserProfileController);
 
