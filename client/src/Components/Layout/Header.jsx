@@ -73,7 +73,7 @@ export const Header = () => {
                   <>
                     <div className="relative flex flex-col items-center justify-center inline-block cursor-pointer mr-2">
                       {userInfo?.user?.photoURL ? (
-                        <img src={userInfo?.user?.photoURL} className="rounded-full w-8 border h-8" alt="user profile pic" onClick={handleMenu}/>
+                        <img src={userInfo?.user?.photoURL.url} className="rounded-full w-8 border h-8" alt="user profile pic" onClick={handleMenu}/>
                       ) : (
 
                          <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-xl mb-4" onClick={handleMenu}>

@@ -272,7 +272,6 @@ export const editProfileController = async (req, res, next) => {
       });
     }
 
-
     const usr = await userModel.findByIdAndUpdate( user?._id, { $set: updatedVals },{ new: true, runValidators: true });
 
     return res.status(200).send({

@@ -78,7 +78,7 @@ export default function PostCard({ post }) {
       <div className="flex items-start gap-3 mb-2">
         {post?.userId?.photoURL ? (
           <Link to={`/profile/${post?.userId?.username}`}>
-            <img src={post?.userId?.photoURL} alt="User Avatar" className="w-10 h-10 rounded-full object-cover"/>
+            <img src={post?.userId?.photoURL?.url} alt="User Avatar" className="w-10 h-10 rounded-full object-cover"/>
           </Link>
         ) : (
           <Link to={`/profile/${post?.userId?.username}`} className="w-10 h-10 bg-blue-500 rounded-full text-white flex items-center justify-center font-bold text-sm">

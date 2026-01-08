@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import {SquarePen} from "lucide-react";
 import { useRef } from "react";
+import { UseAuth } from "../../context/AuthContext";
 
 export default function UserInfoCard({ user, postsCount }) {
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
+  const {userInfo, setUserInfo} = UseAuth();
   const fileInputRef = useRef(null);
 
   const handleProfileIconClick = () => {
@@ -21,7 +23,11 @@ export default function UserInfoCard({ user, postsCount }) {
        const res = await axios.put(`${import.meta.env.VITE_SERVER_API}/api/v1/auth/user/${user?._id}/profile/update-image`, formdata);
 
        if(res.data.success){
-         toast.success("image updated successfully")
+         toast.success("image updated successfully");
+         const usr = res.data.user;
+         const token = userInfo.token;
+         setUserInfo(prev => ({...prev, user : usr}))
+         localStorage.setItem("gramo-auth", JSON.stringify({token : token, user : usr}));
        }
     } catch (error) {
       toast.error(error.message);
@@ -70,8 +76,12 @@ export default function UserInfoCard({ user, postsCount }) {
   return (
     <div className="w-full">
       <div className="flex gap-6 mx-auto w-full max-w-lg my-2 p-6">
-        <div className="relative group w-36 h-36 rounded-full bg-purple-500 text-white flex items-center justify-center text-5xl font-semibold mb-3 hover:opacity-80">
-          {user.name?.[0]}
+        <div className="relative group w-36 h-36 rounded-full bg-purple-500 flex items-center justify-center mb-3 hover:opacity-80">
+           {user?.photoURL ? <>
+             <img src={user?.photoURL?.url} alt={`${user?.name} profile`} className="h-full w-full rounded-full" />
+           </> : <>
+            <p className="text-white text-5xl font-semibold">{user.name?.[0]}</p>
+           </>}
           <div className="absolute text-gray-900 opacity-0 group-hover:opacity-100 cursor-pointer" onClick={handleProfileIconClick}><SquarePen/></div>
         </div>
 
