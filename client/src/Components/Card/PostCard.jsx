@@ -88,7 +88,7 @@ export default function PostCard({ post }) {
         }
 
         <div className="flex-1">
-          <h4 className="font-medium text-gray-900">{post?.userId?.username}</h4>
+          <h4 className="font-medium text-gray-900">{post?.userId?.name}</h4>
           <span className="text-xs text-gray-500">
             {moment(post?.createdAt).fromNow()}
           </span>

@@ -274,10 +274,18 @@ export const editProfileController = async (req, res, next) => {
 
     const usr = await userModel.findByIdAndUpdate( user?._id, { $set: updatedVals },{ new: true, runValidators: true });
 
+    const resUser = {
+      _id: usr._id,
+      name: usr.name,
+      username: usr.username,
+      email: usr.email,
+      photoURL: usr.photoURL,
+    };
+
     return res.status(200).send({
       msg : "Profile Updated Successfully",
       success : true,
-      user : usr
+      user : resUser
     })
 
   } catch (error) {
